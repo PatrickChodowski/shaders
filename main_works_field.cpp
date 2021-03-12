@@ -14,10 +14,6 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-
-// challenge:
-// jak to zrobic by dzialalo na tilemapie
-
 // g++ main.cpp -o game  -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_gpu -lGL
 //https://shader-tutorial.dev/advanced/transparency/
 
