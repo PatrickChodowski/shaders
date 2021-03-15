@@ -5,12 +5,13 @@ namespace shaders
 {
   std::map<std::string, int> variables;
 
-  GPU_Image *img;
+  SDL_Surface *img;
   int v, f, p;
 
   // Shader Block =  Container  for the built-in shader attribute and uniform locations (indices)
   // position_loc, texcoord_loc, color_loc, modelCiewProjection_loc
-  GPU_ShaderBlock block;
+
+
 
   void init(std::string shader_id)
   {
