@@ -6,8 +6,10 @@ namespace shaders
 
   std::string FRAG = "light.frag";
   std::string VERT = "light.vert";
+
+  SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
   GLuint shading_program;
-  extern void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
+  // extern void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 
   const char *read_file(const char *filename)
   {
