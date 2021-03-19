@@ -1,108 +1,135 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 
-namespace shaders 
+namespace shaders
 {
-  std::map<std::string, int> variables;
 
-  SDL_Surface *img;
-  int v, f, p;
+  std::string FRAG = "light.frag";
+  std::string VERT = "light.vert";
+  GLuint shading_program;
+  extern void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 
-  // Shader Block =  Container  for the built-in shader attribute and uniform locations (indices)
-  // position_loc, texcoord_loc, color_loc, modelCiewProjection_loc
-
-
-
-  void init(std::string shader_id)
+  const char *read_file(const char *filename)
   {
-      std::string v_str = shader_id+".vert";
-      std::string f_str = shader_id+".frag";
-
-    // GPU_LoadShader(Shader_type (GPU_ShaderEnum), filename) 
-    // loads shader source from file, compiles it and returns shader object
-
-    //GPU_ShaderEnum: 
-    // 0: Vertex  (vertices - wierzcholek)
-    // The vertex shader is used to transform the attributes of vertices (points of triangle)
-    // It allows the original objects to be distorted or reshaped in any manner.
-    // Changes shape of the object
-    // Output goes to fragment shader
-
-    // 1: Fragment (pixel shader)
-    // Changes appearance of the object
-    v = GPU_LoadShader(GPU_VERTEX_SHADER, v_str.c_str());
-
-		if (!v)
+    long length = 0;
+    char *result = NULL;
+    FILE *file = fopen(filename, "r");
+    if (file)
     {
-			std::cout << "Failed to load vertex shader: " << GPU_GetShaderMessage() << "\n";
+      int status = fseek(file, 0, SEEK_END);
+      if (status != 0)
+      {
+        fclose(file);
+        return NULL;
+      }
+      length = ftell(file);
+      status = fseek(file, 0, SEEK_SET);
+      if (status != 0)
+      {
+        fclose(file);
+        return NULL;
+      }
+      result = (char*)malloc((length + 1) * sizeof(char));
+      if (result)
+      {
+        size_t actual_length = fread(result, sizeof(char), length, file);
+        result[actual_length++] = '\0';
+      }
+      fclose(file);
+      return result;
     }
-
-    f = GPU_LoadShader(GPU_FRAGMENT_SHADER, f_str.c_str());
-
-    
-		if (!f)
-    {
-			std::cout << "Failed to load fragment shader: " << GPU_GetShaderMessage() << "\n";
-    }
-    // Creates and links a shader program from given shader objects
-    p = GPU_LinkShaders(v, f);
-
-    
-		if (!p) 
-    {
-			std::cout << "Failed to link shader program: " << GPU_GetShaderMessage() << "\n";
-		}
-
-    // loads in shader program(p) position_name, texcoord name, color_name, and ModelViewProjectionMatrixName
-    block = GPU_LoadShaderBlock(p, 
-                              "gpu_Vertex", //position name 
-                              "gpu_TexCoord",  // texcoord name
-                              NULL,  // color name
-                              "gpu_ModelViewProjectionMatrix");
-
-
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't read %s", filename);
+    return NULL;
   }
 
-
-
-
-  void add_variable(std::string idV) 
+  GLuint program_check(GLuint program)
   {
-    int location = GPU_GetUniformLocation(p, idV.c_str());
-    std::cout << "location of " << idV <<  " is " << location << std::endl;
-    variables.insert(std::make_pair(idV, location));
-  };
-
-
-  int get_var(std::string idV) 
-  {
-
-    for (auto it = variables.begin(); it != variables.end(); ++it)
+    //Error Checking
+    GLint status;
+    glValidateProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    if (!status)
     {
-      if (it->first == idV)
-          return it->second;
+      GLint len;
+      glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
+      if (len > 1)
+      {
+        char *log;
+        log = (char*)malloc(len);
+        glGetProgramInfoLog(program, len, &len, log);
+        fprintf(stderr, "%s\n\n", log);
+        free(log);
+      }
+      SDL_Log("Error linking shader default program.\n");
+      return GL_FALSE;
     }
-    return (int)(-1);
-  };
+    return GL_TRUE;
+  }
 
-  void add_img(std::string path) 
+  GLuint compile_shader(GLenum type, GLsizei nsources, const char **sources)
   {
-    img = GPU_LoadImage(path.c_str());
-    GPU_SetSnapMode(img, GPU_SNAP_NONE);
-    GPU_SetWrapMode(img, GPU_WRAP_REPEAT, GPU_WRAP_REPEAT);
-  };
 
-  void set_img_shader(std::string texture_var) 
+    GLuint shader;
+    GLint success, len;
+    GLsizei i, srclens[nsources];
+
+    for (i = 0; i < nsources; ++i)
+      srclens[i] = (GLsizei)strlen(sources[i]);
+
+    shader = glCreateShader(type);
+    glShaderSource(shader, nsources, sources, srclens);
+    glCompileShader(shader);
+
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+      glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
+      if (len > 1)
+      {
+        char *log;
+        log = (char*)malloc(len);
+        glGetShaderInfoLog(shader, len, NULL, log);
+        fprintf(stderr, "%s\n\n", log);
+        free(log);
+      }
+      SDL_Log("Error compiling shader.\n");
+    }
+    SDL_Log("shader: %u", shader);
+    return shader;
+  }
+
+    // loads a shader from file and returns the compiled shader
+  GLuint get_shader(GLenum eShaderType, const char *filename)
   {
-	    GPU_SetShaderImage(img, get_var(texture_var), p);
-  };
 
+    const char *shaderSource = read_file(filename);
+    GLuint shader = compile_shader(eShaderType, 1, &shaderSource);
+    return shader;
+  }
 
-  void activate() 
+  //Get and build custom program from 2 files
+  GLuint custom_shaders(const char *vsPath, const char *fsPath)
   {
-	  GPU_ActivateShaderProgram(p, &block);
-  };
+    GLuint vertexShader;
+    GLuint fragmentShader;
 
+    vertexShader = get_shader(GL_VERTEX_SHADER, vsPath);
+    fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath);
+
+    shading_program = glCreateProgram();
+
+    glAttachShader(shading_program, vertexShader);
+    glAttachShader(shading_program, fragmentShader);
+
+    glLinkProgram(shading_program);
+
+    //Error Checking
+    GLuint status;
+    status = program_check(shading_program);
+    if (status == GL_FALSE)
+      return 0;
+    return shading_program;
+  }
 
 }
 

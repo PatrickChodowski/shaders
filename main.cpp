@@ -2,6 +2,11 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <SDL2/SDL_opengl.h>
+#include <GL/gl.h>
+
+#include <stdio.h> 
+#include <stdlib.h> 
 #include <dirent.h>
 #include <iostream>
 #include <fstream>
@@ -17,6 +22,8 @@
 #include <random>
 
 
+//https://github.com/Acry/SDL2-OpenGL/blob/master/src/3a2.c
+
 int WINDOW_WIDTH = 896;
 int WINDOW_HEIGHT = 768;
 int LOGGING = 1;
@@ -29,11 +36,16 @@ SDL_Window *WINDOW = SDL_CreateWindow("test shaders",
                                       0);
 
 
+
 SDL_Renderer *RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
 const Uint8 *KEYBOARD = SDL_GetKeyboardState(NULL);
 bool RUNNING = true;
 #include "utils/logging.h"
 #include "utils/textures.h"
+SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
+
+#include "shaders.h"
+
 
 
   void handle_events(SDL_Event event)
@@ -57,6 +69,12 @@ int main()
 {
 
   textures::init();
+
+
+  // GLuint shading_program = custom_shaders(VERT, FRAG);
+	// glReleaseShaderCompiler();
+
+
   while(RUNNING)
   {
     SDL_Event event;
@@ -80,6 +98,7 @@ int main()
   }
 
     SDL_DestroyRenderer(RENDERER);
+    SDL_GL_DeleteContext(GLCONTEXT); 
     SDL_DestroyWindow(WINDOW);
     SDL_Quit();
 
