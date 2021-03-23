@@ -1,11 +1,7 @@
+#version 330 core
+layout(location = 0) in vec3 vertexPosition_modelspace;
 
-// GLSL         OpenGL 
-// 1.10         2.0
-varying 		vec4 fragColor;
-varying  	vec2 fragCoord;
-
-void main()
-{
-	gl_Position 	= gl_Vertex;
-	fragCoord	= gl_Position.xy;
+void main(){
+	  gl_Position.xyz = vertexPosition_modelspace;
+  gl_Position.w = 1.0;
 }

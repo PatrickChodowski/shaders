@@ -21,12 +21,13 @@ namespace utils
   };
 
 
-void display_stuff()
+void display_stuff(GLuint programID)
 {
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glClearColor(1.f, 0.f, 1.f, 0.f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glUseProgram(programID);
     SDL_GL_SwapWindow(WINDOW);
 }
 
