@@ -4,12 +4,22 @@
 namespace shaders
 {
 
-  std::string FRAG = "light.frag";
-  std::string VERT = "light.vert";
+  std::string FRAG = "test.frag";
+  std::string VERT = "test.vert";
 
-  SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
   GLuint shading_program;
   // extern void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
+
+  void check_glew()
+  {
+
+    if (err != GLEW_OK)
+        exit(1); // or handle the error in a nicer way
+    if (!GLEW_VERSION_2_1)  // check that the machine supports the 2.1 API.
+      exit(1); // or handle the error in a nicer way
+
+  }
+
 
   const char *read_file(const char *filename)
   {
@@ -75,10 +85,21 @@ namespace shaders
     GLint success, len;
     GLsizei i, srclens[nsources];
 
+    logg::print("function compile_shader:: after declaration", 0);
+
     for (i = 0; i < nsources; ++i)
       srclens[i] = (GLsizei)strlen(sources[i]);
 
+    logg::print("function compile_shader:: after sources", 0);
+
+    std::cout << type << std::endl;
+
+    //logg::print("function compile_shader:: glCreateShader " + type, 0);
     shader = glCreateShader(type);
+
+
+    logg::print("function compile_shader:: after glCreateShader", 0);
+
     glShaderSource(shader, nsources, sources, srclens);
     glCompileShader(shader);
 
@@ -105,7 +126,12 @@ namespace shaders
   {
 
     const char *shaderSource = read_file(filename);
+
+    logg::print("after read_file", 0);
+    std::cout << eShaderType << std::endl;
+
     GLuint shader = compile_shader(eShaderType, 1, &shaderSource);
+    logg::print("after compile_shader", 0);
     return shader;
   }
 
@@ -115,20 +141,36 @@ namespace shaders
     GLuint vertexShader;
     GLuint fragmentShader;
 
+    logg::print("before get_shader",0);
     vertexShader = get_shader(GL_VERTEX_SHADER, vsPath);
+
+    logg::print("after get vertex shader",0);
+
     fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath);
 
+    logg::print("after get frag shader",0);
+
+
     shading_program = glCreateProgram();
+
+    logg::print("after create program",0);
+
 
     glAttachShader(shading_program, vertexShader);
     glAttachShader(shading_program, fragmentShader);
 
+    logg::print("after attach shader to program",0);
+
     glLinkProgram(shading_program);
+
+    logg::print("after link shading program",0);
 
     //Error Checking
     GLuint status;
     status = program_check(shading_program);
+    logg::print(std::to_string(status), 0);
     if (status == GL_FALSE)
+      logg::print("tutaj?",0);
       return 0;
     return shading_program;
   }
