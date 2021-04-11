@@ -5,10 +5,9 @@ namespace textures
 {
 
 
-
-
   unsigned int load_texture(std::string img_name, int width, int height, int n_channels)
   {
+    stbi_set_flip_vertically_on_load(true);  
     // this reads texture information 
     unsigned char *data = stbi_load(img_name.c_str(), &width, &height, &n_channels, 0); 
     unsigned int texture;

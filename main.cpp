@@ -46,13 +46,16 @@ bool RUNNING = true;
 #include "utils/logging.h"
 #include "utils/textures.h"
 #include "shaders.h"
-
+int CAMERA_SPEED = 10;
+int CAMERA_X = 0;
+int CAMERA_Y = 0;
 
 
   void handle_events(SDL_Event event)
   // subsystem for handling players input
   {
-
+    CAMERA_X = 0;
+    CAMERA_Y = 0;
     while (SDL_PollEvent(&event))
     {
       switch (event.type)
@@ -60,6 +63,25 @@ bool RUNNING = true;
       case SDL_QUIT:
         RUNNING = false;
         break;
+        case SDL_KEYDOWN:
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_LEFT:
+          CAMERA_X -= CAMERA_SPEED;
+          break;
+        case SDLK_RIGHT:
+          CAMERA_X += CAMERA_SPEED;
+          break;
+        case SDLK_UP:
+          CAMERA_Y += CAMERA_SPEED;
+          break;
+        case SDLK_DOWN:
+          CAMERA_Y -= CAMERA_SPEED;
+          break;
+        }
+
+
+
       };
     };
   };
@@ -96,10 +118,10 @@ int main()
 
     float vertices[] = {
         // positions          // colors           // texture coords
-         0.5f,  -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f,     1.0f, 0.0f, // bottom right
-        -0.5f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // bottom left
-        -0.5f,  -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,     1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
     };
   unsigned int indices[] = {  // note that we start from 0!
     0, 1, 3,   // first triangle
@@ -113,7 +135,8 @@ int main()
       0.0f, 1.0f
   };
 
-  float light_coords[2] = {0.0f, 0.0f};
+  float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
+  float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
 
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
@@ -145,12 +168,9 @@ int main()
 
   glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
   glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
+  glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
 
-
-  logg::print("After shading program",0);
-	glReleaseShaderCompiler();
-  logg::print("After gl relase shader compiler",0);
-
+  glReleaseShaderCompiler();
 
   if (shading_program == 0){
     logg::print("Shading program is "+ std::to_string(shading_program), 0);
@@ -167,10 +187,18 @@ int main()
   {
     SDL_Event event;
     handle_events(event);
+
+    light_coords[0] += CAMERA_X;
+    light_coords[1] += CAMERA_Y;
+    // logg::print("light coord x: " + std::to_string(light_coords[0]),0);
+    // logg::print("light coord y: " + std::to_string(light_coords[1]),0);
+
     glClearColor(0.2f,0.1f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
-    glUseProgram(shading_program);
 
+    glUniform2f(glGetUniformLocation(shading_program, "LightCoord"), light_coords[0], light_coords[1]);
+    glUseProgram(shading_program);
+ 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
