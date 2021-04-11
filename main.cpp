@@ -44,15 +44,7 @@ Uint32 flags = SDL_WINDOW_OPENGL;
 const Uint8 *KEYBOARD = SDL_GetKeyboardState(NULL);
 bool RUNNING = true;
 #include "utils/logging.h"
-// #include  "utils/textures.h"
-
-
-
-
-
-
-
-
+#include "utils/textures.h"
 #include "shaders.h"
 
 
@@ -80,7 +72,7 @@ int main()
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
   SDL_Window *WINDOW = SDL_CreateWindow("test shaders",
                                           SDL_WINDOWPOS_CENTERED,
                                           SDL_WINDOWPOS_CENTERED,
@@ -88,7 +80,6 @@ int main()
                                           WINDOW_HEIGHT,
                                           flags);
 
-  //SDL_Renderer *RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
   SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
   Uint32 current_sdl_gl = SDL_GL_MakeCurrent(WINDOW, GLCONTEXT);
   if(current_sdl_gl != 0)
@@ -100,57 +91,57 @@ int main()
   SDL_GL_SetSwapInterval(1);
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    GLenum err = glewInit();
+  GLenum err = glewInit();
   shaders::check_glew(err);
 
+      float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        -0.5f,  0.5f, 0.0f,
+        0.5f, 0.5f, 0.0f 
+    };  
+
+    float colors[] = {
+      1.0,  0.0,  0.0, //red
+      0.0,  1.0,  0.0, //green
+      0.0,  0.0,  1.0, //blue
+      1.0,  1.0,  1.0  //white
+    };
+
     // create a vertex array object
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    // A Vertex Array Object (VAO) is an object which contains one or more Vertex Buffer Objects and is 
+    // designed to store the information for a complete rendered object. 
+    // In our example this is a diamond consisting of four vertices as well as a color for each vertex.
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    // The shaders receive input data from our VAO through a process of attribute binding, 
+    // allowing us to perform the needed computations to provide us with the desired results.
 
     // create a vertex buffer object
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-      float vertices[] = {
-    // positions          // colors           // texture coords
-     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
-};
-
-    // add the vertex data to the vertex buffer
+    // A Vertex Buffer Object (VBO) is a memory buffer in the high speed memory of your video card designed to hold information about vertices. 
+    // In our example we have two VBOs, one that describes the coordinates of our vertices and another that describes 
+    // the color associated with each vertex. VBOs can also store information such as normals, texcoords, indicies, etc.
+    unsigned int VBO_vertices;
+    glGenBuffers(1, &VBO_vertices);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
+    /* Copy the vertex data from vertices to our buffer */
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), NULL);
+    /* Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex */
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
     glEnableVertexAttribArray(0);
 
+    unsigned int VBO_colors;
+    glGenBuffers(1, &VBO_colors);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_colors);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
+    /* Specify that our color data is going into attribute index 1, and contains three floats per vertex */
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(1);
 
-    // textures 
-    int width = 100;
-    int height = 100;
-    int nrChannels = 3;
-    unsigned char *data = stbi_load("field.png", &width, &height, &nrChannels, 0); 
-    unsigned int texture;
-    glGenTextures(1, &texture);  
-    glBindTexture(GL_TEXTURE_2D, texture);  
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    // textures::load_texture("field.png", 100, 100, 3);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
-
-
-glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-glEnableVertexAttribArray(2);  
-
-
-
-  //textures::init();
 
   logg::print("Before shading program",0);
   GLuint shading_program = shaders::custom_shaders(shaders::VERT.c_str(), shaders::FRAG.c_str());
@@ -172,28 +163,17 @@ glEnableVertexAttribArray(2);
 
   while(RUNNING)
   {
-    
     SDL_Event event;
     handle_events(event);
-
-
     glClearColor(0.2f,0.3f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
-
-
-
     glUseProgram(shading_program);
-
-    glBindVertexArray(vao);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-
+    glDrawArrays(GL_LINES_ADJACENCY, 0, 4);
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);
   }
 
   glDeleteProgram(shading_program);
-  // SDL_DestroyRenderer(RENDERER);
   SDL_GL_DeleteContext(GLCONTEXT); 
   SDL_DestroyWindow(WINDOW);
   SDL_Quit();

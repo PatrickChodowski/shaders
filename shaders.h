@@ -4,8 +4,8 @@
 namespace shaders
 {
 
-  std::string FRAG = "test.frag";
-  std::string VERT = "test.vert";
+  std::string FRAG = "rect.frag";
+  std::string VERT = "rect.vert";
   GLuint shading_program;
 
   void check_glew(GLenum err)
