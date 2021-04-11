@@ -1,5 +1,6 @@
 
 // g++ main.cpp -o game  -lSDL2 -lSDL2_image -lGL -lGLEW
+// https://learnopengl.com/Getting-started/Shaders
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -33,23 +34,19 @@ int WINDOW_WIDTH = 896;
 int WINDOW_HEIGHT = 768;
 int LOGGING = 0;
 
+//Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
+Uint32 flags = SDL_WINDOW_OPENGL;
 
-SDL_Window *WINDOW = SDL_CreateWindow("test shaders",
-                                      SDL_WINDOWPOS_CENTERED,
-                                      SDL_WINDOWPOS_CENTERED,
-                                      WINDOW_WIDTH,
-                                      WINDOW_HEIGHT,
-                                      0);
-
-
-
-SDL_Renderer *RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
 const Uint8 *KEYBOARD = SDL_GetKeyboardState(NULL);
 bool RUNNING = true;
 #include "utils/logging.h"
-#include "utils/textures.h"
+// #include  "utils/textures.h"
 
-GLenum err = glewInit();
+
+
+
+
+
 
 
 #include "shaders.h"
@@ -75,10 +72,64 @@ GLenum err = glewInit();
 int main()
 {
 
-  shaders::check_glew();
 
-  SDL_GLContext glContext = SDL_GL_CreateContext(WINDOW);
-  textures::init();
+  SDL_Init(SDL_INIT_VIDEO);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+  SDL_Window *WINDOW = SDL_CreateWindow("test shaders",
+                                          SDL_WINDOWPOS_CENTERED,
+                                          SDL_WINDOWPOS_CENTERED,
+                                          WINDOW_WIDTH,
+                                          WINDOW_HEIGHT,
+                                          flags);
+
+  //SDL_Renderer *RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
+  SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
+  SDL_GL_SetSwapInterval(1);
+  glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    GLenum err = glewInit();
+  shaders::check_glew(err);
+
+    // triangle data
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f,  0.5f, 0.0f
+    };
+
+    // create a vertex array object
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // create a vertex buffer object
+    unsigned int vbo;
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+    // add the vertex data to the vertex buffer
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), NULL);
+    glEnableVertexAttribArray(0);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  //textures::init();
 
   logg::print("Before shading program",0);
   GLuint shading_program = shaders::custom_shaders(shaders::VERT.c_str(), shaders::FRAG.c_str());
@@ -88,23 +139,22 @@ int main()
 
 
   if (shading_program == 0){
-    logg::print(std::to_string(shading_program), 0);
+    logg::print("Shading program is "+ std::to_string(shading_program), 0);
 		RUNNING = 0;
-	} else
+	} else {
 		SDL_Log("Using program %d\n", shading_program);
-	
+  }
 	if (glGetError()!=0)
+  {
 		SDL_Log("glError: %#08x\n", glGetError());
-	
-	glUseProgram(shading_program);
+  }
 
-  logg::print("before while loop",0);
-  std::cout << RUNNING << std::endl;
   while(RUNNING)
   {
+    
     SDL_Event event;
     handle_events(event);
-    // SDL_RenderClear(RENDERER);
+    //SDL_RenderClear(RENDERER);
 
     // SDL_Rect obj_sprite;
     // obj_sprite.h=WINDOW_HEIGHT;
@@ -116,17 +166,25 @@ int main()
     //                NULL,
     //                &obj_sprite);
 
-    // SDL_RenderPresent(RENDERER);
+    //SDL_RenderPresent(RENDERER);
+
+    glClearColor(0.2f,0.3f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
-		glRectf(-1.0, -1.0, 1.0, 1.0);
+    glUseProgram(shading_program);
+
+    glBindVertexArray(vao);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);
   }
 
-    SDL_DestroyRenderer(RENDERER);
-    SDL_GL_DeleteContext(glContext); 
-    SDL_DestroyWindow(WINDOW);
-    SDL_Quit();
+  glDeleteProgram(shading_program);
+  //SDL_DestroyRenderer(RENDERER);
+  SDL_GL_DeleteContext(GLCONTEXT); 
+  SDL_DestroyWindow(WINDOW);
+  SDL_Quit();
 
 
   return 0;

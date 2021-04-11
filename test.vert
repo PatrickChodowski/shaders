@@ -1,11 +1,5 @@
-
-// GLSL         OpenGL 
-// 1.10         2.0
-varying 		vec4 fragColor;
-varying  	vec2 fragCoord;
-
-void main()
-{
-	gl_Position 	= gl_Vertex;
-	fragCoord	= gl_Position.xy;
+#version 330 core
+layout (location = 0) in vec3 aPos;
+void main(){
+  gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
 }

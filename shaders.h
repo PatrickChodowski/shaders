@@ -6,18 +6,18 @@ namespace shaders
 
   std::string FRAG = "test.frag";
   std::string VERT = "test.vert";
-
   GLuint shading_program;
-  // extern void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 
-  void check_glew()
+  void check_glew(GLenum err)
   {
 
-    if (err != GLEW_OK)
+    if (err != GLEW_OK){
         exit(1); // or handle the error in a nicer way
-    if (!GLEW_VERSION_2_1)  // check that the machine supports the 2.1 API.
-      exit(1); // or handle the error in a nicer way
+    }
 
+    if (!GLEW_VERSION_2_1){  // check that the machine supports the 2.1 API.
+      exit(1); // or handle the error in a nicer way
+    }
   }
 
 
@@ -88,8 +88,9 @@ namespace shaders
     logg::print("function compile_shader:: after declaration", 0);
 
     for (i = 0; i < nsources; ++i)
+    {
       srclens[i] = (GLsizei)strlen(sources[i]);
-
+    }
     logg::print("function compile_shader:: after sources", 0);
 
     std::cout << type << std::endl;
@@ -152,26 +153,33 @@ namespace shaders
 
 
     shading_program = glCreateProgram();
-
-    logg::print("after create program",0);
+    logg::print("Shading program after create: " + std::to_string(shading_program),0);
 
 
     glAttachShader(shading_program, vertexShader);
-    glAttachShader(shading_program, fragmentShader);
+    logg::print("Shading program after attach vertex: " + std::to_string(shading_program),0);
 
-    logg::print("after attach shader to program",0);
+    glAttachShader(shading_program, fragmentShader);
+    logg::print("Shading program after attach fragment: " + std::to_string(shading_program),0);
 
     glLinkProgram(shading_program);
-
-    logg::print("after link shading program",0);
+    logg::print("Shading program after link: " + std::to_string(shading_program),0);
 
     //Error Checking
     GLuint status;
     status = program_check(shading_program);
-    logg::print(std::to_string(status), 0);
-    if (status == GL_FALSE)
-      logg::print("tutaj?",0);
+    logg::print("CustomShader Status: " + std::to_string(status), 0);
+    logg::print("Shading program after program check: " + std::to_string(shading_program),0);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    if (status == GL_FALSE){
+      logg::print("CustomShaderException: Shader status is FALSE",0);
       return 0;
+    };
+
+    logg::print("Shading program before return: " + std::to_string(shading_program),0);
     return shading_program;
   }
 
