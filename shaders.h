@@ -1,107 +1,187 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 
-namespace shaders 
+namespace shaders
 {
-  std::map<std::string, int> variables;
 
-  GPU_Image *img;
-  int v, f, p;
+  std::string FRAG = "test.frag";
+  std::string VERT = "test.vert";
+  GLuint shading_program;
 
-  // Shader Block =  Container  for the built-in shader attribute and uniform locations (indices)
-  // position_loc, texcoord_loc, color_loc, modelCiewProjection_loc
-  GPU_ShaderBlock block;
-
-  void init(std::string shader_id)
+  void check_glew(GLenum err)
   {
-      std::string v_str = shader_id+".vert";
-      std::string f_str = shader_id+".frag";
 
-    // GPU_LoadShader(Shader_type (GPU_ShaderEnum), filename) 
-    // loads shader source from file, compiles it and returns shader object
-
-    //GPU_ShaderEnum: 
-    // 0: Vertex  (vertices - wierzcholek)
-    // The vertex shader is used to transform the attributes of vertices (points of triangle)
-    // It allows the original objects to be distorted or reshaped in any manner.
-    // Changes shape of the object
-    // Output goes to fragment shader
-
-    // 1: Fragment (pixel shader)
-    // Changes appearance of the object
-    v = GPU_LoadShader(GPU_VERTEX_SHADER, v_str.c_str());
-
-		if (!v)
-    {
-			std::cout << "Failed to load vertex shader: " << GPU_GetShaderMessage() << "\n";
+    if (err != GLEW_OK){
+        exit(1); // or handle the error in a nicer way
     }
 
-    f = GPU_LoadShader(GPU_FRAGMENT_SHADER, f_str.c_str());
-
-    
-		if (!f)
-    {
-			std::cout << "Failed to load fragment shader: " << GPU_GetShaderMessage() << "\n";
+    if (!GLEW_VERSION_2_1){  // check that the machine supports the 2.1 API.
+      exit(1); // or handle the error in a nicer way
     }
-    // Creates and links a shader program from given shader objects
-    p = GPU_LinkShaders(v, f);
-
-    
-		if (!p) 
-    {
-			std::cout << "Failed to link shader program: " << GPU_GetShaderMessage() << "\n";
-		}
-
-    // loads in shader program(p) position_name, texcoord name, color_name, and ModelViewProjectionMatrixName
-    block = GPU_LoadShaderBlock(p, 
-                              "gpu_Vertex", //position name 
-                              "gpu_TexCoord",  // texcoord name
-                              NULL,  // color name
-                              "gpu_ModelViewProjectionMatrix");
-
-
   }
 
 
-
-
-  void add_variable(std::string idV) 
+  const char *read_file(const char *filename)
   {
-    int location = GPU_GetUniformLocation(p, idV.c_str());
-    std::cout << "location of " << idV <<  " is " << location << std::endl;
-    variables.insert(std::make_pair(idV, location));
-  };
-
-
-  int get_var(std::string idV) 
-  {
-
-    for (auto it = variables.begin(); it != variables.end(); ++it)
+    long length = 0;
+    char *result = NULL;
+    FILE *file = fopen(filename, "r");
+    if (file)
     {
-      if (it->first == idV)
-          return it->second;
+      int status = fseek(file, 0, SEEK_END);
+      if (status != 0)
+      {
+        fclose(file);
+        return NULL;
+      }
+      length = ftell(file);
+      status = fseek(file, 0, SEEK_SET);
+      if (status != 0)
+      {
+        fclose(file);
+        return NULL;
+      }
+      result = (char*)malloc((length + 1) * sizeof(char));
+      if (result)
+      {
+        size_t actual_length = fread(result, sizeof(char), length, file);
+        result[actual_length++] = '\0';
+      }
+      fclose(file);
+      return result;
     }
-    return (int)(-1);
-  };
+    SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Couldn't read %s", filename);
+    return NULL;
+  }
 
-  void add_img(std::string path) 
+  GLuint program_check(GLuint program)
   {
-    img = GPU_LoadImage(path.c_str());
-    GPU_SetSnapMode(img, GPU_SNAP_NONE);
-    GPU_SetWrapMode(img, GPU_WRAP_REPEAT, GPU_WRAP_REPEAT);
-  };
+    //Error Checking
+    GLint status;
+    glValidateProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    if (!status)
+    {
+      GLint len;
+      glGetProgramiv(program, GL_INFO_LOG_LENGTH, &len);
+      if (len > 1)
+      {
+        char *log;
+        log = (char*)malloc(len);
+        glGetProgramInfoLog(program, len, &len, log);
+        fprintf(stderr, "%s\n\n", log);
+        free(log);
+      }
+      SDL_Log("Error linking shader default program.\n");
+      return GL_FALSE;
+    }
+    return GL_TRUE;
+  }
 
-  void set_img_shader(std::string texture_var) 
+  GLuint compile_shader(GLenum type, GLsizei nsources, const char **sources)
   {
-	    GPU_SetShaderImage(img, get_var(texture_var), p);
-  };
+
+    GLuint shader;
+    GLint success, len;
+    GLsizei i, srclens[nsources];
+
+    logg::print("function compile_shader:: after declaration", 0);
+
+    for (i = 0; i < nsources; ++i)
+    {
+      srclens[i] = (GLsizei)strlen(sources[i]);
+    }
+    logg::print("function compile_shader:: after sources", 0);
+
+    std::cout << type << std::endl;
+
+    //logg::print("function compile_shader:: glCreateShader " + type, 0);
+    shader = glCreateShader(type);
 
 
-  void activate() 
+    logg::print("function compile_shader:: after glCreateShader", 0);
+
+    glShaderSource(shader, nsources, sources, srclens);
+    glCompileShader(shader);
+
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+      glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &len);
+      if (len > 1)
+      {
+        char *log;
+        log = (char*)malloc(len);
+        glGetShaderInfoLog(shader, len, NULL, log);
+        fprintf(stderr, "%s\n\n", log);
+        free(log);
+      }
+      SDL_Log("Error compiling shader.\n");
+    }
+    SDL_Log("shader: %u", shader);
+    return shader;
+  }
+
+    // loads a shader from file and returns the compiled shader
+  GLuint get_shader(GLenum eShaderType, const char *filename)
   {
-	  GPU_ActivateShaderProgram(p, &block);
-  };
 
+    const char *shaderSource = read_file(filename);
+
+    logg::print("after read_file", 0);
+    std::cout << eShaderType << std::endl;
+
+    GLuint shader = compile_shader(eShaderType, 1, &shaderSource);
+    logg::print("after compile_shader", 0);
+    return shader;
+  }
+
+  //Get and build custom program from 2 files
+  GLuint custom_shaders(const char *vsPath, const char *fsPath)
+  {
+    GLuint vertexShader;
+    GLuint fragmentShader;
+
+    logg::print("before get_shader",0);
+    vertexShader = get_shader(GL_VERTEX_SHADER, vsPath);
+
+    logg::print("after get vertex shader",0);
+
+    fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath);
+
+    logg::print("after get frag shader",0);
+
+
+    shading_program = glCreateProgram();
+    logg::print("Shading program after create: " + std::to_string(shading_program),0);
+
+
+    glAttachShader(shading_program, vertexShader);
+    logg::print("Shading program after attach vertex: " + std::to_string(shading_program),0);
+
+    glAttachShader(shading_program, fragmentShader);
+    logg::print("Shading program after attach fragment: " + std::to_string(shading_program),0);
+
+    glLinkProgram(shading_program);
+    logg::print("Shading program after link: " + std::to_string(shading_program),0);
+
+    //Error Checking
+    GLuint status;
+    status = program_check(shading_program);
+    logg::print("CustomShader Status: " + std::to_string(status), 0);
+    logg::print("Shading program after program check: " + std::to_string(shading_program),0);
+
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    if (status == GL_FALSE){
+      logg::print("CustomShaderException: Shader status is FALSE",0);
+      return 0;
+    };
+
+    logg::print("Shading program before return: " + std::to_string(shading_program),0);
+    return shading_program;
+  }
 
 }
 

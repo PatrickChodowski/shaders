@@ -23,9 +23,9 @@ void main()
 
     //vec4 color =  vec4(coord.x, 0.0, 0.0, 1.0);
     //vec4 color =  vec4(0.5, 0.0, 0.0, (1.0-dist));
-    //vec4 color =  vec4(0.5, 0.0, 0.0, 0.0);
+    vec4 color =  vec4(0.0, 0.0, 0.0, 0.0);
 
-    vec4 color  = vec4(col, pow(1.0-dist, 5.0) );
+    //vec4 color  = vec4(col, pow(1.0-dist, 5.0) );
 
     gl_FragColor = color;
 }	
