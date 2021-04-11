@@ -12,6 +12,5 @@ void main(void) {
     gl_Position = vec4(in_position.x, in_position.y, 0.0, 1.0);
     // We're simply passing the color through unmodified
     out_color = in_color;
-
     TexCoord = in_tex_coord;
 }

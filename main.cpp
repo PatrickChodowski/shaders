@@ -97,8 +97,8 @@ int main()
     float vertices[] = {
         // positions          // colors           // texture coords
          0.5f,  -0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-        -0.5f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
+         0.5f, 0.5f, 0.0f,   0.0f, 1.0f, 0.0f,     1.0f, 0.0f, // bottom right
+        -0.5f, 0.5f, 0.0f,   0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // bottom left
         -0.5f,  -0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
     };
   unsigned int indices[] = {  // note that we start from 0!
@@ -113,6 +113,8 @@ int main()
       0.0f, 1.0f
   };
 
+  float light_coords[2] = {0.0f, 0.0f};
+
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -125,7 +127,7 @@ int main()
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-      // position attribute
+    // position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
     // color attribute
@@ -135,12 +137,14 @@ int main()
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
     glEnableVertexAttribArray(2);
 
+
   unsigned int texture1 = textures::load_texture("field.png", 300, 300, 3);
 
   logg::print("Before shading program",0);
   GLuint shading_program = shaders::custom_shaders(shaders::VERT.c_str(), shaders::FRAG.c_str());
 
   glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
+  glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
 
 
   logg::print("After shading program",0);
