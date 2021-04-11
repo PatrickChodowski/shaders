@@ -1,6 +1,7 @@
 
 // g++ main.cpp -o game  -lSDL2 -lSDL2_image -lGL -lGLEW
 // https://learnopengl.com/Getting-started/Shaders
+// https://learnopengl.com/Getting-started/Textures
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -25,6 +26,9 @@
 #include <chrono>
 #include <ctime>
 #include <random>
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
 
 
 //https://github.com/Acry/SDL2-OpenGL/blob/master/src/3a2.c
@@ -86,18 +90,18 @@ int main()
 
   //SDL_Renderer *RENDERER = SDL_CreateRenderer(WINDOW, -1, SDL_RENDERER_ACCELERATED);
   SDL_GLContext GLCONTEXT = SDL_GL_CreateContext(WINDOW);
+  Uint32 current_sdl_gl = SDL_GL_MakeCurrent(WINDOW, GLCONTEXT);
+  if(current_sdl_gl != 0)
+  {
+    std::string error_text = SDL_GetError();
+    logg::print("SDL_GL Make Current failed: " + error_text,0);
+  }
+
   SDL_GL_SetSwapInterval(1);
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
     GLenum err = glewInit();
   shaders::check_glew(err);
-
-    // triangle data
-    float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f,  0.5f, 0.0f
-    };
 
     // create a vertex array object
     unsigned int vao;
@@ -109,23 +113,40 @@ int main()
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
+      float vertices[] = {
+    // positions          // colors           // texture coords
+     0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+     0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+    -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+};
+
     // add the vertex data to the vertex buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT), NULL);
     glEnableVertexAttribArray(0);
 
 
+    // textures 
+    int width = 100;
+    int height = 100;
+    int nrChannels = 3;
+    unsigned char *data = stbi_load("field.png", &width, &height, &nrChannels, 0); 
+    unsigned int texture;
+    glGenTextures(1, &texture);  
+    glBindTexture(GL_TEXTURE_2D, texture);  
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
 
 
-
-
-
-
-
-
-
-
-
+glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+glEnableVertexAttribArray(2);  
 
 
 
@@ -154,22 +175,13 @@ int main()
     
     SDL_Event event;
     handle_events(event);
-    //SDL_RenderClear(RENDERER);
 
-    // SDL_Rect obj_sprite;
-    // obj_sprite.h=WINDOW_HEIGHT;
-    // obj_sprite.w=WINDOW_WIDTH;
-    // obj_sprite.x=0;
-    // obj_sprite.y=0;
-    // SDL_RenderCopy(RENDERER,
-    //                textures::field,
-    //                NULL,
-    //                &obj_sprite);
-
-    //SDL_RenderPresent(RENDERER);
 
     glClearColor(0.2f,0.3f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
+
+
+
     glUseProgram(shading_program);
 
     glBindVertexArray(vao);
@@ -181,7 +193,7 @@ int main()
   }
 
   glDeleteProgram(shading_program);
-  //SDL_DestroyRenderer(RENDERER);
+  // SDL_DestroyRenderer(RENDERER);
   SDL_GL_DeleteContext(GLCONTEXT); 
   SDL_DestroyWindow(WINDOW);
   SDL_Quit();
