@@ -3,7 +3,11 @@
 
 namespace textures
 {
-  void load_texture(std::string img_name, int width, int height, int n_channels)
+
+
+
+
+  unsigned int load_texture(std::string img_name, int width, int height, int n_channels)
   {
     // this reads texture information 
     unsigned char *data = stbi_load(img_name.c_str(), &width, &height, &n_channels, 0); 
@@ -21,6 +25,7 @@ namespace textures
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(data);
+    return texture;
   }
 
 
