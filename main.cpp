@@ -94,12 +94,18 @@ int main()
   GLenum err = glewInit();
   shaders::check_glew(err);
 
-      float vertices[] = {
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        -0.5f,  0.5f, 0.0f,
-        0.5f, 0.5f, 0.0f 
-    };  
+    float vertices[] = {
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left 
+    };
+
+    unsigned int indices[] = {  // note that we start from 0!
+    0, 1, 3,   // first triangle
+    1, 2, 3    // second triangle
+}; 
+
 
     float colors[] = {
       1.0,  0.0,  0.0, //red
@@ -108,40 +114,43 @@ int main()
       1.0,  1.0,  1.0  //white
     };
 
+
+unsigned int VBO, VAO, EBO;
+glGenVertexArrays(1, &VAO);
+// glGenBuffers(1, &VBO_colors);
+glGenBuffers(1, &VBO);
+glGenBuffers(1, &EBO);
+
+glBindVertexArray(VAO);
+glBindBuffer(GL_ARRAY_BUFFER, VBO);
+glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+// glBindBuffer(GL_ARRAY_BUFFER, VBO_colors);
+// glBufferData(GL_ARRAY_BUFFER, sizeof(VBO_colors), colors, GL_STATIC_DRAW);
+
+glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+// glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VBO_colors), 0);
+// glEnableVertexAttribArray(1);
+
+// glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+// glEnableVertexAttribArray(2);
+
     // create a vertex array object
     // A Vertex Array Object (VAO) is an object which contains one or more Vertex Buffer Objects and is 
     // designed to store the information for a complete rendered object. 
     // In our example this is a diamond consisting of four vertices as well as a color for each vertex.
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
     // The shaders receive input data from our VAO through a process of attribute binding, 
     // allowing us to perform the needed computations to provide us with the desired results.
-
     // create a vertex buffer object
     // A Vertex Buffer Object (VBO) is a memory buffer in the high speed memory of your video card designed to hold information about vertices. 
     // In our example we have two VBOs, one that describes the coordinates of our vertices and another that describes 
     // the color associated with each vertex. VBOs can also store information such as normals, texcoords, indicies, etc.
-    unsigned int VBO_vertices;
-    glGenBuffers(1, &VBO_vertices);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_vertices);
-    /* Copy the vertex data from vertices to our buffer */
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    /* Specify that our coordinate data is going into attribute index 0, and contains two floats per vertex */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(0);
-
-    unsigned int VBO_colors;
-    glGenBuffers(1, &VBO_colors);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_colors);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(colors), colors, GL_STATIC_DRAW);
-    /* Specify that our color data is going into attribute index 1, and contains three floats per vertex */
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-
     // textures::load_texture("field.png", 100, 100, 3);
-
 
   logg::print("Before shading program",0);
   GLuint shading_program = shaders::custom_shaders(shaders::VERT.c_str(), shaders::FRAG.c_str());
@@ -165,15 +174,29 @@ int main()
   {
     SDL_Event event;
     handle_events(event);
-    glClearColor(0.2f,0.3f,0,1);
+    glClearColor(0.2f,0.1f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
     glUseProgram(shading_program);
-    glDrawArrays(GL_LINES_ADJACENCY, 0, 4);
+
+        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+        //glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);
   }
 
   glDeleteProgram(shading_program);
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteBuffers(1, &VBO);
+  // glDeleteBuffers(1, &VBO_vertices);
+  glDeleteBuffers(1, &EBO);
+
+
+
+
   SDL_GL_DeleteContext(GLCONTEXT); 
   SDL_DestroyWindow(WINDOW);
   SDL_Quit();
