@@ -43,7 +43,6 @@ int VECTOR_HEIGHT = 24;
 int VECTOR_WIDTH = 28;
 int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
 int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
-std::string CURRENT_SHADER = "base_shading_program";
 
 //Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
 Uint32 flags = SDL_WINDOW_OPENGL;
@@ -76,7 +75,6 @@ int CAMERA_Y = 0;
       case SDL_QUIT:
         RUNNING = false;
         break;
-
         case SDL_KEYDOWN:
         switch (event.key.keysym.sym)
         {
@@ -91,12 +89,6 @@ int CAMERA_Y = 0;
           break;
         case SDLK_DOWN:
           CAMERA_Y -= CAMERA_SPEED;
-          break;
-        case SDLK_l:
-          CURRENT_SHADER = "light_radius_shading_program";
-          break;
-        case SDLK_b:
-          CURRENT_SHADER = "base_shading_program";
           break;
         }
 
@@ -181,22 +173,27 @@ int main()
     glEnableVertexAttribArray(2);
 
 
-  unsigned int texture1 = togl::load(1, "field.png", 300, 300, 3);
-  togl::bind(texture1, 0);
+  unsigned int texture1 = textures::load_texture("field.png", 300, 300, 3);
 
   logg::print("Before shading program",0);
-  //GLuint light_radius_shading_program = shaders::custom_shaders("light_radius_rect");
+  GLuint shading_program = shaders::custom_shaders(shaders::VERT.c_str(), shaders::FRAG.c_str());
 
-  shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
-  //GLuint base_shading_program = shaders::custom_shaders("rect");
-  shaders::shader_map["base_shading_program"] = shaders::custom_shaders("rect");
-
-
-  //glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
-  //glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
-  //glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
+  glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
+  glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
+  glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
 
   glReleaseShaderCompiler();
+
+  if (shading_program == 0){
+    logg::print("Shading program is "+ std::to_string(shading_program), 0);
+		RUNNING = 0;
+	} else {
+		SDL_Log("Using program %d\n", shading_program);
+  }
+	if (glGetError()!=0)
+  {
+		SDL_Log("glError: %#08x\n", glGetError());
+  }
 
   while(RUNNING)
   {
@@ -211,8 +208,8 @@ int main()
     glClearColor(0.2f,0.1f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
-    glUseProgram(shaders::shader_map[CURRENT_SHADER]);
+    glUniform2f(glGetUniformLocation(shading_program, "LightCoord"), light_coords[0], light_coords[1]);
+    glUseProgram(shading_program);
  
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -224,8 +221,7 @@ int main()
     SDL_Delay(1000 / 60);
   }
 
-  glDeleteProgram(shaders::shader_map["base_shading_program"]);
-  glDeleteProgram(shaders::shader_map["light_radius_shading_program"]);
+  glDeleteProgram(shading_program);
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);

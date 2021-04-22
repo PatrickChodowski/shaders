@@ -43,6 +43,51 @@ namespace textures
 
   }
 
+  //   bool is_solid(std::string spritesheet_name, int state_id)
+  // {
+  //   int index = 999;
+  //   for (int i = 0; i < textures::tile_frames_catalog[spritesheet_name].size(); i++)
+  //   {
+  //     if (textures::tile_frames_catalog[spritesheet_name][i].state_id == state_id)
+  //     {
+  //       index = i;
+  //       break;
+  //     }
+  //   }
+  //   if(index < 999){
+  //     return textures::tile_frames_catalog[spritesheet_name][index].solid;
+  //   } else {
+  //     return 0;
+  //   }
+  // }
+
+
+  // SDL_Rect read_tile_state_coords(std::string spritesheet_name, int state_id)
+  // {
+  //   // gets coordinates of tiles per state_id in given spritesheet
+
+  //   // handle door ids:
+  //   if((state_id >= 20) && (state_id <= 29))
+  //   {
+  //     state_id = 20;
+  //   };
+
+  //   int index;
+  //   for (int i = 0; i < textures::tile_frames_catalog[spritesheet_name].size(); i++)
+  //   {
+  //     if (textures::tile_frames_catalog[spritesheet_name][i].state_id == state_id)
+  //     {
+  //       index = i;
+  //       break;
+  //     }
+  //   }
+  //   SDL_Rect coords = {textures::tile_frames_catalog[spritesheet_name][index].x,
+  //                      textures::tile_frames_catalog[spritesheet_name][index].y,
+  //                      textures::tile_frames_catalog[spritesheet_name][index].w,
+  //                      textures::tile_frames_catalog[spritesheet_name][index].h};
+  //   return coords;
+  // };
+
 }
 
 #endif

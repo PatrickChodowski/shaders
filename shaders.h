@@ -1,11 +1,8 @@
 #ifndef SHADERS_H
-#define SHADERS_Hmake
+#define SHADERS_H
 
 namespace shaders
 {
-
-  std::string FRAG = "rect.frag";
-  std::string VERT = "rect.vert";
   GLuint shading_program;
 
   void check_glew(GLenum err)
@@ -137,17 +134,20 @@ namespace shaders
   }
 
   //Get and build custom program from 2 files
-  GLuint custom_shaders(const char *vsPath, const char *fsPath)
+  GLuint custom_shaders(const char *shader_name)
   {
     GLuint vertexShader;
     GLuint fragmentShader;
 
+    std::string vsPath = std::string("./shaders/")+std::string(shader_name)+std::string(".vert");
+    std::string fsPath = std::string("./shaders/")+std::string(shader_name)+std::string(".frag");
+
     logg::print("before get_shader",0);
-    vertexShader = get_shader(GL_VERTEX_SHADER, vsPath);
+    vertexShader = get_shader(GL_VERTEX_SHADER, vsPath.c_str());
 
     logg::print("after get vertex shader",0);
 
-    fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath);
+    fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath.c_str());
 
     logg::print("after get frag shader",0);
 
@@ -182,6 +182,8 @@ namespace shaders
     logg::print("Shading program before return: " + std::to_string(shading_program),0);
     return shading_program;
   }
+
+  std::map<std::string, GLuint> shader_map;
 
 }
 
