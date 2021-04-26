@@ -39,7 +39,7 @@ int VECTOR_HEIGHT = 24;
 int VECTOR_WIDTH = 28;
 int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
 int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
-std::string CURRENT_SHADER = "base_shading_program";
+std::string CURRENT_SHADER = "canvas";
 
 //Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
 Uint32 flags = SDL_WINDOW_OPENGL;
@@ -139,6 +139,8 @@ int main()
 
   shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
   shaders::shader_map["base_shading_program"] = shaders::custom_shaders("rect");
+  shaders::shader_map["canvas"] = shaders::custom_shaders("canvas");
+
   glReleaseShaderCompiler();
   float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
   float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
