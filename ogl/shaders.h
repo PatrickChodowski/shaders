@@ -185,6 +185,14 @@ namespace shaders
 
   std::map<std::string, GLuint> shader_map;
 
+
+
+  void drop()
+  {
+    glDeleteProgram(shaders::shader_map["base_shading_program"]);
+    glDeleteProgram(shaders::shader_map["light_radius_shading_program"]);
+  }
+
 }
 
 #endif

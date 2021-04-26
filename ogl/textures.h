@@ -1,7 +1,7 @@
-#ifndef TEXTURESOPENGL_H
-#define TEXTURESOPENGL_H
+#ifndef TEXTURES_H
+#define TEXTURES_H
 
-namespace togl
+namespace textures
 {
   unsigned int load(unsigned int texture_id, std::string img_name, int width, int height, int n_channels)
   {

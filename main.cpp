@@ -1,7 +1,4 @@
 
-// g++ main.cpp -o game  -lSDL2 -lSDL2_image -lGL -lGLEW
-// https://learnopengl.com/Getting-started/Shaders
-// https://learnopengl.com/Getting-started/Textures
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -31,9 +28,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
-//https://github.com/Acry/SDL2-OpenGL/blob/master/src/3a2.c
-//https://github.com/Acry/SDL2-OpenGL/blob/master/src/2.c
+/// woooooo
+// http://docs.gl/
 
 int WINDOW_WIDTH = 896;
 int WINDOW_HEIGHT = 768;
@@ -50,14 +46,14 @@ Uint32 flags = SDL_WINDOW_OPENGL;
 
 const Uint8 *KEYBOARD = SDL_GetKeyboardState(NULL);
 bool RUNNING = true;
-#include "ogl_utils.h"
 #include "utils/logging.h"
-#include "utils/textures.h"
-#include "utils/opengl_textures.h"
-#include "shaders.h"
+
+#include "ogl/utils.h"
+#include "ogl/textures.h"
+#include "ogl/shaders.h"
+#include "ogl/buffer.h"
 
 // #include "World.h"
-
 
 int CAMERA_SPEED = 10;
 int CAMERA_X = 0;
@@ -135,68 +131,25 @@ int main()
 
   GLenum err = glewInit();
   shaders::check_glew(err);
+  buffer::init();
+   
 
-    float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,     1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-    };
-  unsigned int indices[] = {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
-  }; 
+  unsigned int texture1 = textures::load(1, "field.png", 300, 300, 3);
+  textures::bind(texture1, 0);
 
-  float tex_coords[] = {
-      1.0f, 1.0f,
-      1.0f, 0.0f,
-      0.0f, 0.0f,
-      0.0f, 1.0f
-  };
-
+  shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
+  shaders::shader_map["base_shading_program"] = shaders::custom_shaders("rect");
+  glReleaseShaderCompiler();
   float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
   float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
 
-  unsigned int VBO, VAO, EBO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
-
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-
-
-  unsigned int texture1 = togl::load(1, "field.png", 300, 300, 3);
-  togl::bind(texture1, 0);
-
-  logg::print("Before shading program",0);
-  //GLuint light_radius_shading_program = shaders::custom_shaders("light_radius_rect");
-
-  shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
-  //GLuint base_shading_program = shaders::custom_shaders("rect");
-  shaders::shader_map["base_shading_program"] = shaders::custom_shaders("rect");
 
 
   //glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
   //glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
   //glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
 
-  glReleaseShaderCompiler();
+  
 
   while(RUNNING)
   {
@@ -205,8 +158,6 @@ int main()
 
     light_coords[0] += CAMERA_X;
     light_coords[1] += CAMERA_Y;
-    // logg::print("light coord x: " + std::to_string(light_coords[0]),0);
-    // logg::print("light coord y: " + std::to_string(light_coords[1]),0);
 
     glClearColor(0.2f,0.1f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -217,19 +168,18 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
 
-    glBindVertexArray(VAO); 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(buffer::VAO); 
+
+    // Its going to draw actually bound buffer!!! (its a state machine, so first we bind the buffer) and its going to draw it
+    // glDrawArrays() // used without index buffer
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // used with index buffer
 
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);
   }
 
-  glDeleteProgram(shaders::shader_map["base_shading_program"]);
-  glDeleteProgram(shaders::shader_map["light_radius_shading_program"]);
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
-
+  shaders::drop();
+  buffer::drop();
   SDL_GL_DeleteContext(GLCONTEXT); 
   SDL_DestroyWindow(WINDOW);
   SDL_Quit();
