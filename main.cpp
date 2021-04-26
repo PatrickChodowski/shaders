@@ -54,7 +54,7 @@ bool RUNNING = true;
 #include "ogl/shaders.h"
 #include "ogl/buffer.h"
 
-#include "World.h"
+// #include "World.h"
 
 int CAMERA_SPEED = 10;
 int CAMERA_X = 0;
@@ -137,8 +137,10 @@ int main()
   shaders::check_glew(err);
   buffer::init();
 
+  textures::init();
+
   //// level data
-  world::init_lvl(LEVEL_NAME);
+  //world::init_lvl(LEVEL_NAME);
    
 
   unsigned int texture1 = textures::load(1, "field.png", 300, 300, 3);

@@ -3,13 +3,58 @@
 
 namespace textures
 {
-  struct texture_coords
+  struct tile_coords
   {
     int x;
     int y;
     int w;
     int h;
   };
+
+    struct TileFrame
+  {
+    int state_id;
+    int x;
+    int y;
+    int w;
+    int h;
+    int solid;
+  };
+
+
+    struct ObjectFrame
+  {
+    int state_id;
+    int x;
+    int y;
+    int w;
+    int h;
+  };
+
+
+  struct ItemFrame
+  {
+    int x;
+    int y;
+    int w;
+    int h;
+    int state_id;
+    int dest_offset_x;
+    int dest_offset_y;
+  };
+
+
+  std::map<std::string, std::vector<struct ObjectFrame>> object_frames_catalog;
+  std::map<std::string, std::vector<struct TileFrame>> tile_frames_catalog;
+  std::map<std::string, std::vector<struct ItemFrame>> item_frames_catalog;
+
+  struct Size
+  {
+    int w;
+    int h;
+  };
+
+  std::map<std::string, struct Size> sizes;
 
 
 
@@ -71,7 +116,77 @@ namespace textures
 
 
 
-  SDL_Rect read_tile_state_coords(std::string spritesheet_name, int state_id)
+  std::vector<struct TileFrame> read_tiles_spritesheet(const char *img_json_path)
+  {
+    std::ifstream json_file(img_json_path);
+    std::ostringstream tmp;
+    tmp << json_file.rdbuf();
+    std::string s = tmp.str();
+
+    std::regex e("\\{(.*) (.*) (.*) (.*) (.*) (.*)\\}");
+    std::regex e2(": .([0-9])*");
+    std::regex_token_iterator<std::string::iterator> rend;
+    std::regex_token_iterator<std::string::iterator> a(s.begin(), s.end(), e);
+    std::vector<struct TileFrame> frames = {};
+
+    while (a != rend)
+    {
+
+      struct TileFrame f;
+      std::string s(*a++);
+      std::regex_token_iterator<std::string::iterator> numbers(s.begin(), s.end(), e2);
+      std::vector<int> numbers_v = {};
+      while (numbers != rend)
+      {
+        std::string number_string(*numbers++);
+        std::string number_clean;
+        number_clean = number_string.replace(0, 2, "");
+        numbers_v.push_back(std::stoi(number_clean));
+      }
+
+      f.x = numbers_v[0];
+      f.y = numbers_v[1];
+      f.w = numbers_v[2];
+      f.h = numbers_v[3];
+      f.state_id = numbers_v[4];
+      f.solid = numbers_v[5];
+      frames.push_back(f);
+    }
+    return frames;
+  }
+
+
+
+
+
+  void init()
+  {
+    logg::print("Init texture data read...",1);
+    // this probably has to be split, its growing too large
+    // EVEN A DAMN STICK HAS ITS OWN SPRITESHEET NOWADAYS HUH
+    // object_frames_catalog["barbarian"] = textures::read_object_spritesheet("assets/barbarian_spritesheet.json");
+    // sizes["barbarian"].h = 90;
+    // sizes["barbarian"].w = 58;
+
+    // object_frames_catalog["skeleton"] = textures::read_object_spritesheet("assets/skeleton_spritesheet.json");
+    // sizes["skeleton"].h = 96;
+    // sizes["skeleton"].w = 96;
+
+    // object_frames_catalog["ripper"] = textures::read_object_spritesheet("assets/ripper_spritesheet.json");
+    // sizes["ripper"].h = 96;
+    // sizes["ripper"].w = 96;
+
+    // object_frames_catalog["items"] = textures::read_object_spritesheet("assets/items_spritesheet.json");
+    // tile_frames_catalog["forest"] = textures::read_tiles_spritesheet("assets/forest_spritesheet.json");
+    tile_frames_catalog["dungeon"] = textures::read_tiles_spritesheet("assets/dungeon_spritesheet.json");
+
+    //item_frames_catalog["stick"] = textures::read_item_spritesheet("assets/stick_spritesheet.json"); // stick
+    //logg::print("Read texture data!",1);
+  }
+
+
+
+  tile_coords read_tile_state_coords(std::string spritesheet_name, int state_id)
   {
     // gets coordinates of tiles per state_id in given spritesheet
 
@@ -90,10 +205,11 @@ namespace textures
         break;
       }
     }
-    SDL_Rect coords = {textures::tile_frames_catalog[spritesheet_name][index].x,
-                       textures::tile_frames_catalog[spritesheet_name][index].y,
-                       textures::tile_frames_catalog[spritesheet_name][index].w,
-                       textures::tile_frames_catalog[spritesheet_name][index].h};
+    tile_coords coords;
+    coords.x = textures::tile_frames_catalog[spritesheet_name][index].x;
+    coords.y = textures::tile_frames_catalog[spritesheet_name][index].y;
+    coords.w = textures::tile_frames_catalog[spritesheet_name][index].w;
+    coords.h = textures::tile_frames_catalog[spritesheet_name][index].h;
     return coords;
   };
 
