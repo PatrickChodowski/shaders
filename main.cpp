@@ -39,6 +39,7 @@ int VECTOR_HEIGHT = 24;
 int VECTOR_WIDTH = 28;
 int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
 int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
+std::string LEVEL_NAME = "test";
 std::string CURRENT_SHADER = "canvas";
 
 //Uint32 flags = SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN;
@@ -53,11 +54,14 @@ bool RUNNING = true;
 #include "ogl/shaders.h"
 #include "ogl/buffer.h"
 
-// #include "World.h"
+#include "World.h"
 
 int CAMERA_SPEED = 10;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
+
+
+
 
 
   void handle_events(SDL_Event event)
@@ -132,6 +136,9 @@ int main()
   GLenum err = glewInit();
   shaders::check_glew(err);
   buffer::init();
+
+  //// level data
+  world::init_lvl(LEVEL_NAME);
    
 
   unsigned int texture1 = textures::load(1, "field.png", 300, 300, 3);

@@ -3,6 +3,16 @@
 
 namespace textures
 {
+  struct texture_coords
+  {
+    int x;
+    int y;
+    int w;
+    int h;
+  };
+
+
+
   unsigned int load(unsigned int texture_id, std::string img_name, int width, int height, int n_channels)
   {
     // loads texture into CPU and later into GPU
@@ -55,6 +65,36 @@ namespace textures
   {
     GlCall(glActiveTexture(GL_TEXTURE0 + slot));
     GlCall(glBindTexture(GL_TEXTURE_2D, texture_id));
+  };
+
+
+
+
+
+  SDL_Rect read_tile_state_coords(std::string spritesheet_name, int state_id)
+  {
+    // gets coordinates of tiles per state_id in given spritesheet
+
+    // handle door ids:
+    if((state_id >= 20) && (state_id <= 29))
+    {
+      state_id = 20;
+    };
+
+    int index;
+    for (int i = 0; i < textures::tile_frames_catalog[spritesheet_name].size(); i++)
+    {
+      if (textures::tile_frames_catalog[spritesheet_name][i].state_id == state_id)
+      {
+        index = i;
+        break;
+      }
+    }
+    SDL_Rect coords = {textures::tile_frames_catalog[spritesheet_name][index].x,
+                       textures::tile_frames_catalog[spritesheet_name][index].y,
+                       textures::tile_frames_catalog[spritesheet_name][index].w,
+                       textures::tile_frames_catalog[spritesheet_name][index].h};
+    return coords;
   };
 
 
