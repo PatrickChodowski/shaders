@@ -37,10 +37,6 @@ int TILE_DIM = 96;
 int VERTEX_WIDTH = 10;
 int VERTEX_HEIGHT = 8;
 
-//float QUADS_VERTICES[] = {};
-
-std::vector<float> QUADS_VERTICES = {};
-
 int WINDOW_WIDTH = VERTEX_WIDTH*TILE_DIM;
 int WINDOW_HEIGHT = VERTEX_HEIGHT*TILE_DIM;
 int LOGGING = 0;
@@ -48,14 +44,6 @@ int VECTOR_HEIGHT = 24;
 int VECTOR_WIDTH = 28;
 int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
 int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
-
-// generate vertices positions for tile map
-// scaled -1.0f, 1.0f for VERTEX_WIDTH
-
-
-
-
-
 
 std::string LEVEL_NAME = "test";
 std::string CURRENT_SHADER = "canvas";
@@ -116,6 +104,9 @@ int CAMERA_Y = 0;
         case SDLK_b:
           CURRENT_SHADER = "base_shading_program";
           break;
+        case SDLK_g:
+          CURRENT_SHADER = "canvas";
+          break;
         }
 
 
@@ -162,7 +153,6 @@ int main()
   //// level data
   //world::init_lvl(LEVEL_NAME);
    
-
   unsigned int texture1 = textures::load(1, "field.png", 300, 300, 3);
   textures::bind(texture1, 0);
 
@@ -174,13 +164,9 @@ int main()
   float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
   float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
 
-
-
   //glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
   //glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
   //glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
-
-  
 
   while(RUNNING)
   {
@@ -190,20 +176,16 @@ int main()
     light_coords[0] += CAMERA_X;
     light_coords[1] += CAMERA_Y;
 
-    glClearColor(0.2f,0.1f,0,1);
     glClear(GL_COLOR_BUFFER_BIT);
-
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
- 
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture1);
-
     glBindVertexArray(buffer::VAO); 
 
-    // Its going to draw actually bound buffer!!! (its a state machine, so first we bind the buffer) and its going to draw it
-    // glDrawArrays() // used without index buffer
-     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // used with index buffer
+    // batch drawing:
+    //glDrawElements(GL_TRIANGLES, VINDICES.size()*3, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, VINDICES.size()*3, GL_UNSIGNED_INT, nullptr);
 
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);

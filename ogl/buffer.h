@@ -3,16 +3,7 @@
 
 namespace buffer
 {
-
-  float vertices[] = {
-    // positions          // colors           // texture coords
-    0.9f,  0.9f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-    0.9f, -0.9f, 0.0f,   0.0f, 1.0f, 0.0f,     1.0f, 0.0f, // bottom right
-    -0.9f, -0.9f, 0.0f,   0.0f, 0.0f, 1.0f,     0.0f, 0.0f, // bottom left
-    -0.9f,  0.9f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-  };
   unsigned int VBO, VAO, EBO;
-
   void init(std::vector<Vertex> vertices_tilemap, std::vector<Vindex> vindices_tilemap)
   {
 
@@ -32,6 +23,10 @@ namespace buffer
       vertices_array[(start_position+4)] = vertices_tilemap[v].g_col;
       vertices_array[(start_position+5)] = vertices_tilemap[v].b_col;
       vertices_array[(start_position+6)] = vertices_tilemap[v].a_col;
+
+      // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].x_pos << " " << 
+      // vertices_tilemap[v].y_pos << std::endl;
+
     }
 
     // generate indices array out of vector of Indices:
@@ -44,21 +39,14 @@ namespace buffer
       vindices_array[start_position] = vindices_tilemap[i].a;
       vindices_array[(start_position+1)] = vindices_tilemap[i].b;
       vindices_array[(start_position+2)] = vindices_tilemap[i].c;
+
+      // std::cout << "VINDEX " << i << ": " << vindices_tilemap[i].a << " " << 
+      // vindices_tilemap[i].b << " " << vindices_tilemap[i].c << " " << 
+      // std::endl;
     }
-
-
-
-
   // vertex is not position, vertex can have much more than the position - so we pass a lot of data in vertices
   // then we generate buffer, bind it and add data ( vertices data)
   // they are all attributes
-
-
-
-      unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,   // first triangle
-        1, 2, 3    // second triangle
-      }; 
 
       // buffers are based in GPU (vram)
       glGenVertexArrays(1, &VAO);
@@ -67,13 +55,26 @@ namespace buffer
 
       glBindVertexArray(VAO);
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+      // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+      glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_array), vertices_array, GL_STATIC_DRAW);
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+      // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+      glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vindices_array), vindices_array, GL_STATIC_DRAW);
 
-          // position attribute
+    // new version:
+    // position attribute:
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0); // enable this attribute at the end
+
+    // color attribute:
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1); // enable this attribute at the end
+
+    // position attribute
     /*
     glVertexAttribPointer(
        index - index of the generic vertex attribute, 
@@ -84,18 +85,7 @@ namespace buffer
        pointer - offset of attribute within vertex
        )
     */
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0); // enable this attribute at the end
-    // color attribute
-    // glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    // glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);    
   }
-
-
-
 
   void drop()
   {

@@ -116,12 +116,8 @@ std::vector<Vindex> generate_vindices(int vertex_width, int vertex_height)
 
   int n_vindices = vertex_width*vertex_height*2; //160
   int n_vertices = (vertex_width + 1)*(vertex_height+1); //99
+  int n_rows = (vertex_height+1);
 
-  // 0 1 11
-  // 1 12 11
-
-  // 1 2 12
-  // 2 13 12
   std::vector<Vindex> vindices = {};
   int v_limit = n_vertices - (vertex_width+2); //99-(10+2) = 87
   int central_v = 0;
@@ -138,10 +134,18 @@ std::vector<Vindex> generate_vindices(int vertex_width, int vertex_height)
     //create right part of the quad
     Vindex vi_r;
     vi_r.a = central_v+1;
-    vi_r.b = central_v+vertex_width+1;
-    vi_r.c = central_v+vertex_width;
+    vi_r.b = central_v+vertex_width+2;
+    vi_r.c = central_v+vertex_width+1;
     vindices.push_back(vi_r);
-    central_v += 1;
+
+    int NROW = std::floor((float)(central_v+1)/(vertex_width+1))+1;
+    // move by 2 at the end of the quads row
+    if ((central_v+1) == ((NROW*vertex_width) + (NROW-1)))
+    {
+      central_v += 2;
+    }  else {
+      central_v += 1;
+    }  
   }
 
   return vindices;
