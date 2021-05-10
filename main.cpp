@@ -31,14 +31,32 @@
 /// woooooo
 // http://docs.gl/
 
-int WINDOW_WIDTH = 896;
-int WINDOW_HEIGHT = 768;
-int LOGGING = 0;
 int TILE_DIM = 96;
+
+// how many quads to show in opengl
+int VERTEX_WIDTH = 10;
+int VERTEX_HEIGHT = 8;
+
+//float QUADS_VERTICES[] = {};
+
+std::vector<float> QUADS_VERTICES = {};
+
+int WINDOW_WIDTH = VERTEX_WIDTH*TILE_DIM;
+int WINDOW_HEIGHT = VERTEX_HEIGHT*TILE_DIM;
+int LOGGING = 0;
 int VECTOR_HEIGHT = 24;
 int VECTOR_WIDTH = 28;
 int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
 int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
+
+// generate vertices positions for tile map
+// scaled -1.0f, 1.0f for VERTEX_WIDTH
+
+
+
+
+
+
 std::string LEVEL_NAME = "test";
 std::string CURRENT_SHADER = "canvas";
 
@@ -110,6 +128,9 @@ int CAMERA_Y = 0;
 int main()
 {
 
+  std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  // next -> pass both to the buffer(s)!
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -135,8 +156,7 @@ int main()
 
   GLenum err = glewInit();
   shaders::check_glew(err);
-  buffer::init();
-
+  buffer::init(VERTICES, VINDICES);
   textures::init();
 
   //// level data
@@ -183,7 +203,7 @@ int main()
 
     // Its going to draw actually bound buffer!!! (its a state machine, so first we bind the buffer) and its going to draw it
     // glDrawArrays() // used without index buffer
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // used with index buffer
+     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // used with index buffer
 
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);
