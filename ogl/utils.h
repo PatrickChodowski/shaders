@@ -29,9 +29,13 @@ struct Vertex
   double g_col;
   double b_col;
   double a_col;
+
+  double tile_type;
+  double tex_coord_x;
+  double tex_coord_y;
 };
 // useful in buffer:
-int COUNT_VERTEX_ATTRIBUTES = 7;
+int COUNT_VERTEX_ATTRIBUTES = 10;
 struct Vindex
 {  
   int a; 
@@ -91,11 +95,24 @@ std::vector<Vertex> generate_vertices(int vertex_width, int vertex_height)
 
       // colors
       v.r_col = (double) rand()/RAND_MAX;
-      v.g_col = 0.0f;
-      v.b_col = 0.0f;
+      v.g_col = (double) rand()/RAND_MAX;
+      v.b_col = (double) rand()/RAND_MAX;
       v.a_col = 1.0f;
 
 
+      // tile type
+      v.tile_type = 10;
+
+      // (0,1), (1, 1)
+      // (0,0), (1, 0)
+
+      float tex_coord_x = 0;
+      float tex_coord_y = 0;
+      if(w%2 == 1){tex_coord_x = 0.249;};
+      if(h%2 == 1){tex_coord_y = 1;};
+
+      v.tex_coord_x = tex_coord_x;
+      v.tex_coord_y = tex_coord_y;
 
       vertices.push_back(v);
     } 

@@ -152,8 +152,8 @@ int main()
 
   //// level data
   //world::init_lvl(LEVEL_NAME);
-   
-  unsigned int texture1 = textures::load(1, "field.png", 300, 300, 3);
+
+  unsigned int texture1 = textures::load(1, "./assets/dungeon_spritesheet.png", 256, 64, 4);
   textures::bind(texture1, 0);
 
   shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
@@ -162,11 +162,7 @@ int main()
 
   glReleaseShaderCompiler();
   float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
-  float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
-
-  //glUniform1i(glGetUniformLocation(shading_program, "texture1"), 0);
-  //glUniform2fv(glGetUniformLocation(shading_program, "LightCoord"), 2, light_coords);
-  //glUniform2fv(glGetUniformLocation(shading_program, "resolution"), 2, resolution);
+  //float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
 
   while(RUNNING)
   {
@@ -178,13 +174,13 @@ int main()
 
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
+    glUniform1i(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "texture1"), 0);
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture1);
-    glBindVertexArray(buffer::VAO); 
 
+    textures::bind(texture1, 0);
+
+    glBindVertexArray(buffer::VAO); 
     // batch drawing:
-    //glDrawElements(GL_TRIANGLES, VINDICES.size()*3, GL_UNSIGNED_INT, nullptr);
     glDrawElements(GL_TRIANGLES, VINDICES.size()*3, GL_UNSIGNED_INT, nullptr);
 
 		SDL_GL_SwapWindow(WINDOW);

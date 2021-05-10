@@ -14,7 +14,7 @@ namespace buffer
  
     for(int v=0; v<n_vertices; v++)
     {
-      int start_position = v*7;
+      int start_position = v*COUNT_VERTEX_ATTRIBUTES;
       vertices_array[start_position] = vertices_tilemap[v].x_pos;
       vertices_array[(start_position+1)] = vertices_tilemap[v].y_pos;
       vertices_array[(start_position+2)] = vertices_tilemap[v].z_pos;
@@ -24,8 +24,13 @@ namespace buffer
       vertices_array[(start_position+5)] = vertices_tilemap[v].b_col;
       vertices_array[(start_position+6)] = vertices_tilemap[v].a_col;
 
-      // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].x_pos << " " << 
-      // vertices_tilemap[v].y_pos << std::endl;
+      vertices_array[(start_position+7)] = vertices_tilemap[v].tile_type;
+
+      vertices_array[(start_position+8)] = vertices_tilemap[v].tex_coord_x;
+      vertices_array[(start_position+9)] = vertices_tilemap[v].tex_coord_y;
+
+      // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].tex_coord_x << " " << 
+      // vertices_tilemap[v].tex_coord_y << std::endl;
 
     }
 
@@ -55,24 +60,29 @@ namespace buffer
 
       glBindVertexArray(VAO);
       glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-      // glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
       glBufferData(GL_ARRAY_BUFFER, sizeof(vertices_array), vertices_array, GL_STATIC_DRAW);
 
       glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-      // glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
       glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vindices_array), vindices_array, GL_STATIC_DRAW);
 
     // new version:
     // position attribute:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); // enable this attribute at the end
 
     // color attribute:
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1); // enable this attribute at the end
+
+    // tile_type attribute
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(7 * sizeof(float)));
+    glEnableVertexAttribArray(2); // enable this attribute at the end
+
+    // in texture coordinates attribute
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(8 * sizeof(float)));
+    glEnableVertexAttribArray(3); // enable this attribute at the end
+
+
 
     // position attribute
     /*
