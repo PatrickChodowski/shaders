@@ -121,6 +121,8 @@ int main()
 
   std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
   std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
+
+  generate_vertices_offsets(VERTEX_WIDTH, VERTEX_HEIGHT);
   // next -> pass both to the buffer(s)!
 
   SDL_Init(SDL_INIT_VIDEO);
