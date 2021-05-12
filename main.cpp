@@ -107,9 +107,6 @@ int CAMERA_Y = 0;
         case SDLK_l:
           CURRENT_SHADER = "light_radius_shading_program";
           break;
-        case SDLK_b:
-          CURRENT_SHADER = "base_shading_program";
-          break;
         case SDLK_g:
           CURRENT_SHADER = "canvas";
           break;
@@ -167,7 +164,6 @@ int main()
   textures::bind(texture1, 0);
 
   shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
-  shaders::shader_map["base_shading_program"] = shaders::custom_shaders("rect");
   shaders::shader_map["canvas"] = shaders::custom_shaders("canvas");
 
   glReleaseShaderCompiler();
