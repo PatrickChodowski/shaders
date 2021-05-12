@@ -319,7 +319,6 @@ std::vector<Quad> generate_quad_list(int vertex_width, int vertex_height)
     t.bottom_right = (((j*2)+1)+vertex_width_size);
     quads.push_back(t);
     if(t.quad_id%vertex_width == 0){offset += vertex_width;};
-    std::cout << offset << std::endl;
     // std::cout << "Tile id: " << t.tile_id  << std::endl << t.top_left << " " << t.top_right  << std::endl <<
     // t.bottom_left << " " << t.bottom_right << std::endl;
   }

@@ -68,7 +68,7 @@ bool RUNNING = true;
 
 // #include "World.h"
 
-int CAMERA_SPEED = 10;
+int CAMERA_SPEED = 20;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
 
