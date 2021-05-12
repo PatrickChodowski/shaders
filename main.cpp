@@ -1,8 +1,14 @@
 
+// note(todo:) if mac os then OpenGL/ else GL/ for gl, glu
+// note: glut not needed?
+// makefile for mac: g++ -std=c++11 main.cpp -o game -lSDL2 -lSDL2_image -lGLEW -framework OpenGL
+
 #include <GL/glew.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+// #include <GL/gl.h>
+#include <OpenGL/gl.h>
+// #include <GL/glu.h>
+#include <OpenGL/glu.h>
+// #include <GL/glut.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -119,11 +125,13 @@ int CAMERA_Y = 0;
 int main()
 {
 
-  std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
-  std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  //std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  //std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
 
-  generate_vertices_offsets(VERTEX_WIDTH, VERTEX_HEIGHT);
-  // next -> pass both to the buffer(s)!
+  std::vector<Vertex> VERTICES = generate_vertices_offsets(VERTEX_WIDTH, VERTEX_HEIGHT);
+  std::vector<Quad> QUADS = generate_quad_list(VERTEX_WIDTH, VERTEX_HEIGHT);
+  std::vector<Vindex> VINDICES = generate_vindices_offsets(QUADS);
+
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);

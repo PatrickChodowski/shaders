@@ -10,7 +10,7 @@ namespace buffer
     // generate vertices array out of vector of Vertices:
     int n_vertices = vertices_tilemap.size();
     int vertices_array_size = COUNT_VERTEX_ATTRIBUTES*n_vertices;
-    float vertices_array[vertices_array_size] = {};
+    float vertices_array[vertices_array_size];
  
     for(int v=0; v<n_vertices; v++)
     {
@@ -37,7 +37,7 @@ namespace buffer
     // generate indices array out of vector of Indices:
     int n_vindices = vindices_tilemap.size();
     int vindices_array_size = 3*n_vindices; // its always 3 as it is a triangle
-    unsigned int vindices_array[vindices_array_size] = {};
+    unsigned int vindices_array[vindices_array_size];
     for(int i=0; i<n_vindices; i++)
     {
       int start_position = i*3;
