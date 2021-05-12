@@ -1,16 +1,15 @@
 #version 330 core
 layout (location = 0) in vec3 in_position;
-layout (location = 1) in vec3 in_color;
-layout (location = 2) in vec2 in_tex_coord;
+layout (location = 1) in vec4 in_color;
+layout (location = 2) in float in_tile_type;
+layout (location = 3) in vec2 in_tex_coord;
 
-out vec3 out_color;
-out vec2 TexCoord;
+
+out vec4 out_color;
+out vec2 out_tex_coord;
 
 void main(void) {
-    // Since we are using flat lines, our input only had two points: x and y.
-    // Set the Z coordinate to 0 and W coordinate to 1
-    gl_Position = vec4(in_position.x, in_position.y, 0.0, 1.0);
-    // We're simply passing the color through unmodified
-    out_color = in_color;
-    TexCoord = in_tex_coord;
+    gl_Position = vec4(in_position.x, in_position.y, in_position.z, 1.0);
+    out_color = vec4(in_color);
+    out_tex_coord = vec2(in_tex_coord);
 }

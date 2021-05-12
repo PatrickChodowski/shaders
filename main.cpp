@@ -125,8 +125,8 @@ int CAMERA_Y = 0;
 int main()
 {
 
-  //std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
-  //std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  // std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
+  // std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
 
   std::vector<Vertex> VERTICES = generate_vertices_offsets(VERTEX_WIDTH, VERTEX_HEIGHT);
   std::vector<Quad> QUADS = generate_quad_list(VERTEX_WIDTH, VERTEX_HEIGHT);
