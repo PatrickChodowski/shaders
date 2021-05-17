@@ -4,7 +4,7 @@
 namespace buffer
 {
   unsigned int VBO, VAO, EBO;
-  void init(std::vector<Vertex> vertices_tilemap, std::vector<Vindex> vindices_tilemap)
+  void init(std::map<int, Vertex> vertices_tilemap, std::vector<Vindex> vindices_tilemap)
   {
 
     // generate vertices array out of vector of Vertices:
@@ -96,6 +96,44 @@ namespace buffer
        )
     */
   }
+
+  // void init_from_level_map(std::vector<tiles::Tile> level_map)
+  // {
+
+
+  //   // generate vertices array out of vector of Vertices:
+  //   int n_vertices = level_map.size();
+  //   int vertices_array_size = COUNT_VERTEX_ATTRIBUTES*n_vertices;
+  //   float vertices_array[vertices_array_size];
+ 
+  //   for(int v=0; v<n_vertices; v++)
+  //   {
+  //     int start_position = v*COUNT_VERTEX_ATTRIBUTES;
+  //     vertices_array[start_position] = vertices_tilemap[v].x_pos;
+  //     vertices_array[(start_position+1)] = vertices_tilemap[v].y_pos;
+  //     vertices_array[(start_position+2)] = vertices_tilemap[v].z_pos;
+
+  //     vertices_array[(start_position+3)] = vertices_tilemap[v].r_col;
+  //     vertices_array[(start_position+4)] = vertices_tilemap[v].g_col;
+  //     vertices_array[(start_position+5)] = vertices_tilemap[v].b_col;
+  //     vertices_array[(start_position+6)] = vertices_tilemap[v].a_col;
+
+  //     vertices_array[(start_position+7)] = vertices_tilemap[v].tile_type;
+
+  //     vertices_array[(start_position+8)] = vertices_tilemap[v].tex_coord_x;
+  //     vertices_array[(start_position+9)] = vertices_tilemap[v].tex_coord_y;
+
+  //     // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].tex_coord_x << " " << 
+  //     // vertices_tilemap[v].tex_coord_y << std::endl;
+
+  //   }
+
+
+
+  // }
+
+
+
 
   void drop()
   {

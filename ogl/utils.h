@@ -41,6 +41,7 @@ struct Vertex
 };
 // useful in buffer:
 int COUNT_VERTEX_ATTRIBUTES = 10;
+int VERTEX_OFFSET = 1;
 struct Vindex
 {  
   int a; 
@@ -58,13 +59,9 @@ struct Quad
 };
 
 
-std::vector<Vertex> generate_vertices(int map_vertex_width,
-                                              int map_vertex_height,
-                                              int tile_dim)
-
+std::map<int, Vertex> generate_vertices(int map_vertex_width, int map_vertex_height, int tile_dim)
 {
   int n_tiles = map_vertex_width*map_vertex_height; //80
-  int n_vertices = n_tiles*4;
 
   std::vector<int> width_range = {};
   int current_x_left = 0;
@@ -88,7 +85,7 @@ std::vector<Vertex> generate_vertices(int map_vertex_width,
   }  
 
 
-  std::vector<Vertex> vertices = {};
+  std::map<int, Vertex> vertices = {};
   // variables for counting tile_id (starting from 1)
   int VERTEX_COUNTER = 0;
   int CURRENT_TILE = 1;
@@ -122,7 +119,9 @@ std::vector<Vertex> generate_vertices(int map_vertex_width,
       // assign tile_id
       //v.tile_id = CURRENT_TILE;
       v.vertex_id = VERTEX_COUNTER;
-      vertices.push_back(v);
+      //vertices.push_back(v);
+
+      vertices.insert({VERTEX_COUNTER, v});
 
       VERTEX_COUNTER += 1;
       // CURRENT_TILE = std::round(VERTEX_COUNTER/4) + 1;
@@ -131,18 +130,16 @@ std::vector<Vertex> generate_vertices(int map_vertex_width,
 
   // for(int v=0; v< vertices.size(); v++)
   // {
-  //   std::cout << vertices[v].x_pos << " " << vertices[v].y_pos << std::endl;
+  //   std::cout << "VERTEX: " << vertices[v].vertex_id << " - " << vertices[v].x_pos << " " << vertices[v].y_pos << std::endl;
   // }
   return vertices;
 }
-
 
 std::vector<Quad> generate_quad_list(int map_vertex_width, int map_vertex_height)
 {
 
   int vertex_width_size = map_vertex_width*2; 
   int vertex_height_size = map_vertex_height*2; 
-  int n_vertices = vertex_width_size*vertex_height_size; 
 
   std::vector<Quad> quads = {};
   int n_quads = map_vertex_width*map_vertex_height; 
@@ -159,8 +156,6 @@ std::vector<Quad> generate_quad_list(int map_vertex_width, int map_vertex_height
     t.bottom_right = (((j*2)+1)+vertex_width_size);
     quads.push_back(t);
     if(t.quad_id%map_vertex_width == 0){offset += map_vertex_height;};
-    std::cout << "Quad id: " << t.quad_id  << std::endl << t.top_left << " " << t.top_right  << std::endl <<
-    t.bottom_left << " " << t.bottom_right << std::endl;
   }
 
   return quads;
@@ -186,6 +181,11 @@ std::vector<Vindex> generate_vindices(std::vector<Quad> quads)
     v_r.c = quads[q].bottom_left;
     vindices.push_back(v_r);
   }
+
+  // for(int v=0; v< vindices.size(); v++)
+  // {
+  //   std::cout << "VINDEX: " << vindices[v].a << " " << vindices[v].b << " " << vindices[v].c << std::endl;
+  // }
   return vindices;
 }
 
@@ -197,5 +197,5 @@ glm::mat4 generate_mvp()
   glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
   glm::mat4 mvp = proj*view*model;
-  return mvp;
+  return proj;
 }
