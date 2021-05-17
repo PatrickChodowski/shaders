@@ -7,7 +7,7 @@ clean: rm *.o
 endif
 ifeq ($(UNAME),Linux)
 output: game
-	g++ main.cpp -o game -lSDL2 -lSDL2_image -lGLEW
+	g++ main.cpp -o game -lSDL2 -lSDL2_image -lGL -lGLEW
 game: main.cpp
 clean: rm *.o
 endif
