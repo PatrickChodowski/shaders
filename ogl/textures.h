@@ -63,7 +63,7 @@ namespace textures
     // loads texture into CPU and later into GPU
     // use this to flip the image on read
     // I might have reversed the vertices instead by accident ->
-    stbi_set_flip_vertically_on_load(false);  
+    stbi_set_flip_vertically_on_load(true);  
 
     // this reads texture information 
     unsigned char *image_data = stbi_load(img_name.c_str(), &width, &height, &n_channels, 4); 

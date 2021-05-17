@@ -8,12 +8,14 @@
 #include <OpenGL/gl.h>
 // #include <GL/glu.h>
 #include <OpenGL/glu.h>
-// #include <GL/glut.h>
+
+
+
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_opengl.h>
+
 #include <stdio.h> 
 #include <stdlib.h> 
 #include <dirent.h>
@@ -34,22 +36,33 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
+// glm includes
+#include "glm/glm.hpp"
+#include "glm/mat4x4.hpp"
+#include "glm/ext/matrix_transform.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
+
+
+
 /// woooooo
 // http://docs.gl/
 
 int TILE_DIM = 96;
 
 // how many quads to show in opengl
-int VERTEX_WIDTH = 10;
-int VERTEX_HEIGHT = 8;
+int WINDOW_VERTEX_WIDTH = 10;
+int WINDOW_VERTEX_HEIGHT = 8;
+int MAP_VERTEX_WIDTH = 10;
+int MAP_VERTEX_HEIGHT = 8;
 
-int WINDOW_WIDTH = VERTEX_WIDTH*TILE_DIM;
-int WINDOW_HEIGHT = VERTEX_HEIGHT*TILE_DIM;
+int WINDOW_WIDTH = WINDOW_VERTEX_WIDTH*TILE_DIM;
+int WINDOW_HEIGHT = WINDOW_VERTEX_HEIGHT*TILE_DIM;
+int MAP_WIDTH = TILE_DIM * MAP_VERTEX_WIDTH;
+int MAP_HEIGHT = TILE_DIM * MAP_VERTEX_HEIGHT;
+
 int LOGGING = 0;
-int VECTOR_HEIGHT = 24;
-int VECTOR_WIDTH = 28;
-int MAP_WIDTH = TILE_DIM * VECTOR_WIDTH;
-int MAP_HEIGHT = TILE_DIM * VECTOR_HEIGHT;
 
 std::string LEVEL_NAME = "test";
 std::string CURRENT_SHADER = "canvas";
@@ -122,12 +135,18 @@ int CAMERA_Y = 0;
 int main()
 {
 
-  // std::vector<Vertex> VERTICES = generate_vertices(VERTEX_WIDTH, VERTEX_HEIGHT);
-  // std::vector<Vindex> VINDICES = generate_vindices(VERTEX_WIDTH, VERTEX_HEIGHT);
 
-  std::vector<Vertex> VERTICES = generate_vertices_offsets(VERTEX_WIDTH, VERTEX_HEIGHT);
-  std::vector<Quad> QUADS = generate_quad_list(VERTEX_WIDTH, VERTEX_HEIGHT);
-  std::vector<Vindex> VINDICES = generate_vindices_offsets(QUADS);
+
+
+  
+
+
+  std::vector<Vertex> VERTICES = generate_vertices(MAP_VERTEX_WIDTH,
+                                                  MAP_VERTEX_HEIGHT,
+                                                  TILE_DIM);
+  glm::mat4 MVP = generate_mvp();
+  std::vector<Quad> QUADS = generate_quad_list(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT);
+  std::vector<Vindex> VINDICES = generate_vindices(QUADS);
 
 
   SDL_Init(SDL_INIT_VIDEO);
@@ -153,6 +172,9 @@ int main()
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   GLenum err = glewInit();
+
+
+
   shaders::check_glew(err);
   buffer::init(VERTICES, VINDICES);
   textures::init();
@@ -181,6 +203,7 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
     glUniform1i(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "texture1"), 0);
+    glUniformMatrix4fv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "mvp"), 1, GL_FALSE, glm::value_ptr(MVP));
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
 
     textures::bind(texture1, 0);
