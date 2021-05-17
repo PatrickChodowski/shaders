@@ -49,15 +49,14 @@
 
 int main()
 {
-
+  textures::init();
   std::vector<tiles::Tile> level_map = tiles::load_level("test", MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
-
-
-
-  std::map<int, Vertex> VERTICES = generate_vertices(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
   glm::mat4 MVP = generate_mvp();
-  std::vector<Quad> QUADS = generate_quad_list(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT);
-  std::vector<Vindex> VINDICES = generate_vindices(QUADS);
+
+  // std::map<int, Vertex> VERTICES = generate_vertices(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
+  // glm::mat4 MVP = generate_mvp();
+  // std::vector<Quad> QUADS = generate_quad_list(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT);
+  // std::vector<Vindex> VINDICES = generate_vindices(QUADS);
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -86,8 +85,8 @@ int main()
 
 
   shaders::check_glew(err);
-  buffer::init(VERTICES, VINDICES);
-  textures::init();
+  buffer::init(level_map);
+  
 
   //// level data
   //world::init_lvl(LEVEL_NAME);
@@ -120,7 +119,7 @@ int main()
 
     glBindVertexArray(buffer::VAO); 
     // batch drawing:
-    glDrawElements(GL_TRIANGLES, VINDICES.size()*3, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, level_map.size()*6, GL_UNSIGNED_INT, nullptr);
 
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);

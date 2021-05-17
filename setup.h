@@ -76,11 +76,11 @@ const Uint8 *KEYBOARD = SDL_GetKeyboardState(NULL);
 bool RUNNING = true;
 #include "utils/logging.h"
 #include "ogl/utils.h"
-
+#include "ogl/textures.h"
 #include "utils/tiles.h"
 
 
-#include "ogl/textures.h"
+
 #include "ogl/shaders.h"
 #include "ogl/buffer.h"
 

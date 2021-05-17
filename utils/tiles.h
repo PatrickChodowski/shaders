@@ -147,10 +147,7 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_a.g_col = 0.0f;
     level_tile_map[i].v_a.b_col = 0.0f;
     level_tile_map[i].v_a.a_col = 1.0f;
-
-    // this has to be assigned from spritesheet atlas based on tile type
-    // has to be normalised to  0,1
-    level_tile_map[i].v_a.tex_coord_x = 0.0f;
+    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
     level_tile_map[i].v_a.tex_coord_y = 0.0f;
 
     // create vertex struct - B
@@ -164,8 +161,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_b.g_col = 0.0f;
     level_tile_map[i].v_b.b_col = 0.0f;
     level_tile_map[i].v_b.a_col = 1.0f;
-    level_tile_map[i].v_b.tex_coord_x = 0.0f;
-    level_tile_map[i].v_b.tex_coord_y = 0.0f;
+    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
+    level_tile_map[i].v_a.tex_coord_y = 0.0f;
 
     // create vertex struct - C
     level_tile_map[i].v_c.vertex_id = level_tile_map[i].c;
@@ -178,8 +175,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_c.g_col = 0.0f;
     level_tile_map[i].v_c.b_col = 0.0f;
     level_tile_map[i].v_c.a_col = 1.0f;
-    level_tile_map[i].v_c.tex_coord_x = 0.0f;
-    level_tile_map[i].v_c.tex_coord_y = 0.0f;
+    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
+    level_tile_map[i].v_a.tex_coord_y = 1.0f;
 
     // create vertex struct - D
     level_tile_map[i].v_d.vertex_id = level_tile_map[i].d;
@@ -192,17 +189,17 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_d.g_col = 0.0f;
     level_tile_map[i].v_d.b_col = 0.0f;
     level_tile_map[i].v_d.a_col = 1.0f;
-    level_tile_map[i].v_d.tex_coord_x = 0.0f;
-    level_tile_map[i].v_d.tex_coord_y = 0.0f;
+    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
+    level_tile_map[i].v_a.tex_coord_y = 1.0f;
 
     // create vindices 
-    level_tile_map[i].i_left.i_a = level_tile_map[i].a;
-    level_tile_map[i].i_left.i_b = level_tile_map[i].b;
-    level_tile_map[i].i_left.i_c = level_tile_map[i].c;
+    level_tile_map[i].i_left.a = level_tile_map[i].a;
+    level_tile_map[i].i_left.b = level_tile_map[i].b;
+    level_tile_map[i].i_left.c = level_tile_map[i].c;
 
-    level_tile_map[i].i_right.i_a = level_tile_map[i].b;
-    level_tile_map[i].i_right.i_b = level_tile_map[i].d;
-    level_tile_map[i].i_right.i_c = level_tile_map[i].c;
+    level_tile_map[i].i_right.a = level_tile_map[i].b;
+    level_tile_map[i].i_right.b = level_tile_map[i].d;
+    level_tile_map[i].i_right.c = level_tile_map[i].c;
 
 
     if(level_tile_map[i].id%map_vertex_width == 0){offset += map_vertex_height;};
@@ -219,8 +216,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[t].a << " " << level_tile_map[t].b << std::endl <<
     level_tile_map[t].c << " " << level_tile_map[t].d << std::endl <<
     "Vindices:" << std::endl <<
-    level_tile_map[t].left_vi.i_a << " " << level_tile_map[t].left_vi.i_b << " " << level_tile_map[t].left_vi.i_c << std::endl <<
-    level_tile_map[t].right_vi.i_a << " " << level_tile_map[t].right_vi.i_b << " " << level_tile_map[t].right_vi.i_c << std::endl;
+    level_tile_map[t].i_left.a << " " << level_tile_map[t].i_left.b << " " << level_tile_map[t].i_left.c << std::endl <<
+    level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
   }
 
 

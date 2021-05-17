@@ -9,16 +9,20 @@ namespace textures
     int y;
     int w;
     int h;
+    int norm_x_start;
+    int norm_x_end;
   };
 
     struct TileFrame
   {
-    int state_id;
+    int type;
     int x;
     int y;
     int w;
     int h;
     int solid;
+    int norm_x_start;
+    int norm_x_end;
   };
 
 
@@ -45,7 +49,7 @@ namespace textures
 
 
   std::map<std::string, std::vector<struct ObjectFrame>> object_frames_catalog;
-  std::map<std::string, std::vector<struct TileFrame>> tile_frames_catalog;
+  std::map<std::string, std::map<int, struct TileFrame>> tile_frames_catalog;
   std::map<std::string, std::vector<struct ItemFrame>> item_frames_catalog;
 
   struct Size
@@ -117,18 +121,18 @@ namespace textures
 
 
 
-  std::vector<struct TileFrame> read_tiles_spritesheet(const char *img_json_path)
+  std::map<int, struct TileFrame> read_tiles_spritesheet(const char *img_json_path)
   {
     std::ifstream json_file(img_json_path);
     std::ostringstream tmp;
     tmp << json_file.rdbuf();
     std::string s = tmp.str();
 
-    std::regex e("\\{(.*) (.*) (.*) (.*) (.*) (.*)\\}");
+    std::regex e("\\{(.*) (.*) (.*) (.*) (.*) (.*) (.*) (.*)\\}");
     std::regex e2(": .([0-9])*");
     std::regex_token_iterator<std::string::iterator> rend;
     std::regex_token_iterator<std::string::iterator> a(s.begin(), s.end(), e);
-    std::vector<struct TileFrame> frames = {};
+    std::map<int, struct TileFrame> frames;
 
     while (a != rend)
     {
@@ -149,9 +153,13 @@ namespace textures
       f.y = numbers_v[1];
       f.w = numbers_v[2];
       f.h = numbers_v[3];
-      f.state_id = numbers_v[4];
+      f.type = numbers_v[4];
       f.solid = numbers_v[5];
-      frames.push_back(f);
+
+      f.norm_x_start = numbers_v[6];
+      f.norm_x_end = numbers_v[7];
+
+      frames.insert({f.type, f});
     }
     return frames;
   }
@@ -187,20 +195,20 @@ namespace textures
 
 
 
-  tile_coords read_tile_state_coords(std::string spritesheet_name, int state_id)
+  tile_coords read_tile_state_coords(std::string spritesheet_name, int type)
   {
     // gets coordinates of tiles per state_id in given spritesheet
 
     // handle door ids:
-    if((state_id >= 20) && (state_id <= 29))
+    if((type >= 20) && (type <= 29))
     {
-      state_id = 20;
+      type = 20;
     };
 
     int index;
     for (int i = 0; i < textures::tile_frames_catalog[spritesheet_name].size(); i++)
     {
-      if (textures::tile_frames_catalog[spritesheet_name][i].state_id == state_id)
+      if (textures::tile_frames_catalog[spritesheet_name][i].type == type)
       {
         index = i;
         break;

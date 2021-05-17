@@ -4,46 +4,76 @@
 namespace buffer
 {
   unsigned int VBO, VAO, EBO;
-  void init(std::map<int, Vertex> vertices_tilemap, std::vector<Vindex> vindices_tilemap)
+  void init(std::vector<tiles::Tile> tiles)
   {
-
-    // generate vertices array out of vector of Vertices:
-    int n_vertices = vertices_tilemap.size();
-    int vertices_array_size = COUNT_VERTEX_ATTRIBUTES*n_vertices;
+    // generate vertices array out of tiles struct
+    int n_vertices = tiles.size()*4;
+    int vertices_array_size = tiles::COUNT_VERTEX_ATTRIBUTES*tiles.size()*4;
     float vertices_array[vertices_array_size];
  
-    for(int v=0; v<n_vertices; v++)
+    for(int t=0; t<tiles.size(); t++)
     {
-      int start_position = v*COUNT_VERTEX_ATTRIBUTES;
-      vertices_array[start_position] = vertices_tilemap[v].x_pos;
-      vertices_array[(start_position+1)] = vertices_tilemap[v].y_pos;
-      vertices_array[(start_position+2)] = vertices_tilemap[v].z_pos;
+      int start_position = t*tiles::COUNT_VERTEX_ATTRIBUTES;
 
-      vertices_array[(start_position+3)] = vertices_tilemap[v].r_col;
-      vertices_array[(start_position+4)] = vertices_tilemap[v].g_col;
-      vertices_array[(start_position+5)] = vertices_tilemap[v].b_col;
-      vertices_array[(start_position+6)] = vertices_tilemap[v].a_col;
+      vertices_array[(start_position+0)] = tiles[t].v_a.x_pos;
+      vertices_array[(start_position+1)] = tiles[t].v_a.y_pos;
+      vertices_array[(start_position+2)] = tiles[t].v_a.z_pos;
+      vertices_array[(start_position+3)] = tiles[t].v_a.r_col;
+      vertices_array[(start_position+4)] = tiles[t].v_a.g_col;
+      vertices_array[(start_position+5)] = tiles[t].v_a.b_col;
+      vertices_array[(start_position+6)] = tiles[t].v_a.a_col;
+      vertices_array[(start_position+7)] = tiles[t].v_a.tile_type;
+      vertices_array[(start_position+8)] = tiles[t].v_a.tex_coord_x;
+      vertices_array[(start_position+9)] = tiles[t].v_a.tex_coord_y;
 
-      vertices_array[(start_position+7)] = vertices_tilemap[v].tile_type;
+      vertices_array[(start_position+10)] = tiles[t].v_b.x_pos;
+      vertices_array[(start_position+11)] = tiles[t].v_b.y_pos;
+      vertices_array[(start_position+12)] = tiles[t].v_b.z_pos;
+      vertices_array[(start_position+13)] = tiles[t].v_b.r_col;
+      vertices_array[(start_position+14)] = tiles[t].v_b.g_col;
+      vertices_array[(start_position+15)] = tiles[t].v_b.b_col;
+      vertices_array[(start_position+16)] = tiles[t].v_b.a_col;
+      vertices_array[(start_position+17)] = tiles[t].v_b.tile_type;
+      vertices_array[(start_position+18)] = tiles[t].v_b.tex_coord_x;
+      vertices_array[(start_position+19)] = tiles[t].v_b.tex_coord_y;
 
-      vertices_array[(start_position+8)] = vertices_tilemap[v].tex_coord_x;
-      vertices_array[(start_position+9)] = vertices_tilemap[v].tex_coord_y;
+      vertices_array[(start_position+20)] = tiles[t].v_c.x_pos;
+      vertices_array[(start_position+21)] = tiles[t].v_c.y_pos;
+      vertices_array[(start_position+22)] = tiles[t].v_c.z_pos;
+      vertices_array[(start_position+23)] = tiles[t].v_c.r_col;
+      vertices_array[(start_position+24)] = tiles[t].v_c.g_col;
+      vertices_array[(start_position+25)] = tiles[t].v_c.b_col;
+      vertices_array[(start_position+26)] = tiles[t].v_c.a_col;
+      vertices_array[(start_position+27)] = tiles[t].v_c.tile_type;
+      vertices_array[(start_position+28)] = tiles[t].v_c.tex_coord_x;
+      vertices_array[(start_position+29)] = tiles[t].v_c.tex_coord_y;
 
-      // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].tex_coord_x << " " << 
-      // vertices_tilemap[v].tex_coord_y << std::endl;
-
+      vertices_array[(start_position+30)] = tiles[t].v_d.x_pos;
+      vertices_array[(start_position+31)] = tiles[t].v_d.y_pos;
+      vertices_array[(start_position+32)] = tiles[t].v_d.z_pos;
+      vertices_array[(start_position+33)] = tiles[t].v_d.r_col;
+      vertices_array[(start_position+34)] = tiles[t].v_d.g_col;
+      vertices_array[(start_position+35)] = tiles[t].v_d.b_col;
+      vertices_array[(start_position+36)] = tiles[t].v_d.a_col;
+      vertices_array[(start_position+37)] = tiles[t].v_d.tile_type;
+      vertices_array[(start_position+38)] = tiles[t].v_d.tex_coord_x;
+      vertices_array[(start_position+39)] = tiles[t].v_d.tex_coord_y;
     }
 
     // generate indices array out of vector of Indices:
-    int n_vindices = vindices_tilemap.size();
+    int n_vindices = tiles.size()*2;
     int vindices_array_size = 3*n_vindices; // its always 3 as it is a triangle
     unsigned int vindices_array[vindices_array_size];
-    for(int i=0; i<n_vindices; i++)
+    for(int t=0; t<tiles.size(); t++)
     {
-      int start_position = i*3;
-      vindices_array[start_position] = vindices_tilemap[i].a;
-      vindices_array[(start_position+1)] = vindices_tilemap[i].b;
-      vindices_array[(start_position+2)] = vindices_tilemap[i].c;
+      int start_position = t*3;
+      vindices_array[(start_position+0)] = tiles[t].i_left.a;
+      vindices_array[(start_position+1)] = tiles[t].i_left.b;
+      vindices_array[(start_position+2)] = tiles[t].i_left.c;
+
+      vindices_array[(start_position+3)] = tiles[t].i_right.a;
+      vindices_array[(start_position+4)] = tiles[t].i_right.b;
+      vindices_array[(start_position+5)] = tiles[t].i_right.c;
 
       // std::cout << "VINDEX " << i << ": " << vindices_tilemap[i].a << " " << 
       // vindices_tilemap[i].b << " " << vindices_tilemap[i].c << " " << 
@@ -67,19 +97,19 @@ namespace buffer
 
     // new version:
     // position attribute:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); // enable this attribute at the end
 
     // color attribute:
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1); // enable this attribute at the end
 
     // tile_type attribute
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(7 * sizeof(float)));
     glEnableVertexAttribArray(2); // enable this attribute at the end
 
     // in texture coordinates attribute
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(8 * sizeof(float)));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(8 * sizeof(float)));
     glEnableVertexAttribArray(3); // enable this attribute at the end
 
 
@@ -96,44 +126,6 @@ namespace buffer
        )
     */
   }
-
-  // void init_from_level_map(std::vector<tiles::Tile> level_map)
-  // {
-
-
-  //   // generate vertices array out of vector of Vertices:
-  //   int n_vertices = level_map.size();
-  //   int vertices_array_size = COUNT_VERTEX_ATTRIBUTES*n_vertices;
-  //   float vertices_array[vertices_array_size];
- 
-  //   for(int v=0; v<n_vertices; v++)
-  //   {
-  //     int start_position = v*COUNT_VERTEX_ATTRIBUTES;
-  //     vertices_array[start_position] = vertices_tilemap[v].x_pos;
-  //     vertices_array[(start_position+1)] = vertices_tilemap[v].y_pos;
-  //     vertices_array[(start_position+2)] = vertices_tilemap[v].z_pos;
-
-  //     vertices_array[(start_position+3)] = vertices_tilemap[v].r_col;
-  //     vertices_array[(start_position+4)] = vertices_tilemap[v].g_col;
-  //     vertices_array[(start_position+5)] = vertices_tilemap[v].b_col;
-  //     vertices_array[(start_position+6)] = vertices_tilemap[v].a_col;
-
-  //     vertices_array[(start_position+7)] = vertices_tilemap[v].tile_type;
-
-  //     vertices_array[(start_position+8)] = vertices_tilemap[v].tex_coord_x;
-  //     vertices_array[(start_position+9)] = vertices_tilemap[v].tex_coord_y;
-
-  //     // std::cout << "VERTEX " << v << ": " << vertices_tilemap[v].tex_coord_x << " " << 
-  //     // vertices_tilemap[v].tex_coord_y << std::endl;
-
-  //   }
-
-
-
-  // }
-
-
-
 
   void drop()
   {
