@@ -1,15 +1,17 @@
 
-// note(todo:) if mac os then OpenGL/ else GL/ for gl, glu
-// note: glut not needed?
-// makefile for mac: g++ -std=c++11 main.cpp -o game -lSDL2 -lSDL2_image -lGLEW -framework OpenGL
 
 #include <GL/glew.h>
-// #include <GL/gl.h>
-#include <OpenGL/gl.h>
-// #include <GL/glu.h>
-#include <OpenGL/glu.h>
 
 
+#ifdef TARGET_OS_MAC
+    #include <OpenGL/gl.h>
+    #include <OpenGL/glu.h>
+#endif
+
+#ifdef __linux__
+    #include <GL/gl.h>
+    #include <GL/glu.h>
+#endif
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
