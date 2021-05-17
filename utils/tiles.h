@@ -2,15 +2,53 @@
 #define TILES_H
 
 // Everything related to rendering tiles
+// We read level from the file - it gives information about each tile
+// 
 
 namespace tiles
 {
-  struct V_Index
-  {
-    int i_a;
-    int i_b;
-    int i_c;
+  struct Vindex
+  {  
+    int a; 
+    int b;
+    int c;
   };
+
+
+
+
+struct Vertex
+{  
+  // info send to GPU:
+  double x_pos; 
+  double y_pos;
+  double z_pos;
+
+  double r_col;
+  double g_col;
+  double b_col;
+  double a_col;
+
+  double tile_type;
+  double tex_coord_x;
+  double tex_coord_y;
+
+  /// not counted as VERTEX ATTRIBUTES - yet
+  int tile_id;
+  int vertex_id;
+};
+
+int COUNT_VERTEX_ATTRIBUTES = 10;
+int VERTEX_OFFSET = 0;
+
+// Tile will contain information about:
+// - original position (x,y of top left corner)
+// - type, solid, id
+// - vertex ids for a,b,c,d
+// - Vindices with vertex ids
+// - actual vertex information
+
+
 
   struct Tile
   {
@@ -29,13 +67,19 @@ namespace tiles
     // a b
     // c d
 
+    // Vertex information
+    Vertex v_a;
+    Vertex v_b;
+    Vertex v_c;
+    Vertex v_d;
+
     // vindices
-    struct V_Index left_vi;
+    struct Vindex i_left;
     // a b
     // c
 
 
-    struct V_Index right_vi;
+    struct Vindex i_right;
     //   b
     // c d
 
@@ -85,20 +129,80 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
 
   for(int i = 0; i < level_tile_map.size(); i++)
   {
+    // add vertex ids
     int j = i + offset;
     level_tile_map[i].a = (j*2);
     level_tile_map[i].b = (j*2)+1;
     level_tile_map[i].c = ((j*2)+vertex_width_size);
     level_tile_map[i].d = (((j*2)+1)+vertex_width_size);
 
-     // create vindices 
-     level_tile_map[i].left_vi.i_a = level_tile_map[i].a;
-     level_tile_map[i].left_vi.i_b = level_tile_map[i].b;
-     level_tile_map[i].left_vi.i_c = level_tile_map[i].c;
+    // create vertex struct - A
+    level_tile_map[i].v_a.vertex_id = level_tile_map[i].a;
+    level_tile_map[i].v_a.tile_id = level_tile_map[i].id;
+    level_tile_map[i].v_a.tile_type = level_tile_map[i].type;
+    level_tile_map[i].v_a.x_pos = level_tile_map[i].x;
+    level_tile_map[i].v_a.y_pos = level_tile_map[i].y;
+    level_tile_map[i].v_a.z_pos = 0.0f;
+    level_tile_map[i].v_a.r_col = 0.0f;
+    level_tile_map[i].v_a.g_col = 0.0f;
+    level_tile_map[i].v_a.b_col = 0.0f;
+    level_tile_map[i].v_a.a_col = 1.0f;
 
-     level_tile_map[i].right_vi.i_a = level_tile_map[i].b;
-     level_tile_map[i].right_vi.i_b = level_tile_map[i].d;
-     level_tile_map[i].right_vi.i_c = level_tile_map[i].c;
+    // this has to be assigned from spritesheet atlas based on tile type
+    // has to be normalised to  0,1
+    level_tile_map[i].v_a.tex_coord_x = 0.0f;
+    level_tile_map[i].v_a.tex_coord_y = 0.0f;
+
+    // create vertex struct - B
+    level_tile_map[i].v_b.vertex_id = level_tile_map[i].b;
+    level_tile_map[i].v_b.tile_id = level_tile_map[i].id;
+    level_tile_map[i].v_b.tile_type = level_tile_map[i].type;
+    level_tile_map[i].v_b.x_pos = level_tile_map[i].x + tile_dim  - VERTEX_OFFSET;
+    level_tile_map[i].v_b.y_pos = level_tile_map[i].y;
+    level_tile_map[i].v_b.z_pos = 0.0f;
+    level_tile_map[i].v_b.r_col = 0.0f;
+    level_tile_map[i].v_b.g_col = 0.0f;
+    level_tile_map[i].v_b.b_col = 0.0f;
+    level_tile_map[i].v_b.a_col = 1.0f;
+    level_tile_map[i].v_b.tex_coord_x = 0.0f;
+    level_tile_map[i].v_b.tex_coord_y = 0.0f;
+
+    // create vertex struct - C
+    level_tile_map[i].v_c.vertex_id = level_tile_map[i].c;
+    level_tile_map[i].v_c.tile_id = level_tile_map[i].id;
+    level_tile_map[i].v_c.tile_type = level_tile_map[i].type;
+    level_tile_map[i].v_c.x_pos = level_tile_map[i].x;
+    level_tile_map[i].v_c.y_pos = level_tile_map[i].y + tile_dim;
+    level_tile_map[i].v_c.z_pos = 0.0f;
+    level_tile_map[i].v_c.r_col = 0.0f;
+    level_tile_map[i].v_c.g_col = 0.0f;
+    level_tile_map[i].v_c.b_col = 0.0f;
+    level_tile_map[i].v_c.a_col = 1.0f;
+    level_tile_map[i].v_c.tex_coord_x = 0.0f;
+    level_tile_map[i].v_c.tex_coord_y = 0.0f;
+
+    // create vertex struct - D
+    level_tile_map[i].v_d.vertex_id = level_tile_map[i].d;
+    level_tile_map[i].v_d.tile_id = level_tile_map[i].id;
+    level_tile_map[i].v_d.tile_type = level_tile_map[i].type;
+    level_tile_map[i].v_d.x_pos = level_tile_map[i].x + tile_dim  - VERTEX_OFFSET;
+    level_tile_map[i].v_d.y_pos = level_tile_map[i].y + tile_dim;
+    level_tile_map[i].v_d.z_pos = 0.0f;
+    level_tile_map[i].v_d.r_col = 0.0f;
+    level_tile_map[i].v_d.g_col = 0.0f;
+    level_tile_map[i].v_d.b_col = 0.0f;
+    level_tile_map[i].v_d.a_col = 1.0f;
+    level_tile_map[i].v_d.tex_coord_x = 0.0f;
+    level_tile_map[i].v_d.tex_coord_y = 0.0f;
+
+    // create vindices 
+    level_tile_map[i].i_left.i_a = level_tile_map[i].a;
+    level_tile_map[i].i_left.i_b = level_tile_map[i].b;
+    level_tile_map[i].i_left.i_c = level_tile_map[i].c;
+
+    level_tile_map[i].i_right.i_a = level_tile_map[i].b;
+    level_tile_map[i].i_right.i_b = level_tile_map[i].d;
+    level_tile_map[i].i_right.i_c = level_tile_map[i].c;
 
 
     if(level_tile_map[i].id%map_vertex_width == 0){offset += map_vertex_height;};

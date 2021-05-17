@@ -19,44 +19,36 @@ static bool GlLogCall(const char* function, const char* file, int line)
   return true;
 }
 
-struct Vertex
-{  
-  // info send to GPU:
-  int x_pos; 
-  int y_pos;
-  double z_pos;
+// struct Vertex
+// {  
+//   // info send to GPU:
+//   int x_pos; 
+//   int y_pos;
+//   double z_pos;
 
-  double r_col;
-  double g_col;
-  double b_col;
-  double a_col;
+//   double r_col;
+//   double g_col;
+//   double b_col;
+//   double a_col;
 
-  double tile_type;
-  double tex_coord_x;
-  double tex_coord_y;
+//   double tile_type;
+//   double tex_coord_x;
+//   double tex_coord_y;
 
-  /// not counted as VERTEX ATTRIBUTES - yet
-  int quad_id;
-  int vertex_id;
-};
+//   /// not counted as VERTEX ATTRIBUTES - yet
+//   int quad_id;
+//   int vertex_id;
+// };
 // useful in buffer:
 int COUNT_VERTEX_ATTRIBUTES = 10;
 int VERTEX_OFFSET = 1;
-struct Vindex
-{  
-  int a; 
-  int b;
-  int c;
-};
+// struct Vindex
+// {  
+//   int a; 
+//   int b;
+//   int c;
+// };
 
-struct Quad
-{
-  int quad_id;
-  int top_left;
-  int top_right;
-  int bottom_left;
-  int bottom_right;
-};
 
 
 std::map<int, Vertex> generate_vertices(int map_vertex_width, int map_vertex_height, int tile_dim)
@@ -135,59 +127,59 @@ std::map<int, Vertex> generate_vertices(int map_vertex_width, int map_vertex_hei
   return vertices;
 }
 
-std::vector<Quad> generate_quad_list(int map_vertex_width, int map_vertex_height)
-{
+// std::vector<Quad> generate_quad_list(int map_vertex_width, int map_vertex_height)
+// {
 
-  int vertex_width_size = map_vertex_width*2; 
-  int vertex_height_size = map_vertex_height*2; 
+//   int vertex_width_size = map_vertex_width*2; 
+//   int vertex_height_size = map_vertex_height*2; 
 
-  std::vector<Quad> quads = {};
-  int n_quads = map_vertex_width*map_vertex_height; 
-  int offset = 0;
-  for(int i = 0; i < n_quads; i++)
-  {
-    Quad t;
-    t.quad_id = i+1;
-    int j = i + offset;
+//   std::vector<Quad> quads = {};
+//   int n_quads = map_vertex_width*map_vertex_height; 
+//   int offset = 0;
+//   for(int i = 0; i < n_quads; i++)
+//   {
+//     Quad t;
+//     t.quad_id = i+1;
+//     int j = i + offset;
 
-    t.top_left = (j*2);
-    t.top_right = (j*2)+1;
-    t.bottom_left = ((j*2)+vertex_width_size);
-    t.bottom_right = (((j*2)+1)+vertex_width_size);
-    quads.push_back(t);
-    if(t.quad_id%map_vertex_width == 0){offset += map_vertex_height;};
-  }
+//     t.top_left = (j*2);
+//     t.top_right = (j*2)+1;
+//     t.bottom_left = ((j*2)+vertex_width_size);
+//     t.bottom_right = (((j*2)+1)+vertex_width_size);
+//     quads.push_back(t);
+//     if(t.quad_id%map_vertex_width == 0){offset += map_vertex_height;};
+//   }
 
-  return quads;
-}
+//   return quads;
+// }
 
 
 
-std::vector<Vindex> generate_vindices(std::vector<Quad> quads)
-{
-  // this amount of indices I need (each tile = quad and then *2)
-  std::vector<Vindex> vindices = {};
-  for(int q=0; q < quads.size(); q++)
-  {
-    Vindex v_l;
-    v_l.a = quads[q].top_left;
-    v_l.b = quads[q].top_right;
-    v_l.c = quads[q].bottom_left;
-    vindices.push_back(v_l);
+// std::vector<Vindex> generate_vindices(std::vector<Quad> quads)
+// {
+//   // this amount of indices I need (each tile = quad and then *2)
+//   std::vector<Vindex> vindices = {};
+//   for(int q=0; q < quads.size(); q++)
+//   {
+//     Vindex v_l;
+//     v_l.a = quads[q].top_left;
+//     v_l.b = quads[q].top_right;
+//     v_l.c = quads[q].bottom_left;
+//     vindices.push_back(v_l);
 
-    Vindex v_r;
-    v_r.a = quads[q].top_right;
-    v_r.b = quads[q].bottom_right;
-    v_r.c = quads[q].bottom_left;
-    vindices.push_back(v_r);
-  }
+//     Vindex v_r;
+//     v_r.a = quads[q].top_right;
+//     v_r.b = quads[q].bottom_right;
+//     v_r.c = quads[q].bottom_left;
+//     vindices.push_back(v_r);
+//   }
 
-  // for(int v=0; v< vindices.size(); v++)
-  // {
-  //   std::cout << "VINDEX: " << vindices[v].a << " " << vindices[v].b << " " << vindices[v].c << std::endl;
-  // }
-  return vindices;
-}
+//   // for(int v=0; v< vindices.size(); v++)
+//   // {
+//   //   std::cout << "VINDEX: " << vindices[v].a << " " << vindices[v].b << " " << vindices[v].c << std::endl;
+//   // }
+//   return vindices;
+// }
 
 
 glm::mat4 generate_mvp()
