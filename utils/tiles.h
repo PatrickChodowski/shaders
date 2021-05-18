@@ -39,7 +39,7 @@ struct Vertex
 };
 
 int COUNT_VERTEX_ATTRIBUTES = 10;
-int VERTEX_OFFSET = 0;
+int VERTEX_OFFSET = 1;
 
 // Tile will contain information about:
 // - original position (x,y of top left corner)
@@ -125,16 +125,15 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
   // assign vertices to tiles
   int vertex_width_size = map_vertex_width*2; 
   int vertex_height_size = map_vertex_height*2; 
-  int offset = 0;
 
   for(int i = 0; i < level_tile_map.size(); i++)
   {
     // add vertex ids
-    int j = i + offset;
-    level_tile_map[i].a = (j*2);
-    level_tile_map[i].b = (j*2)+1;
-    level_tile_map[i].c = ((j*2)+vertex_width_size);
-    level_tile_map[i].d = (((j*2)+1)+vertex_width_size);
+    int j = i * 4;
+    level_tile_map[i].a = j;
+    level_tile_map[i].b = j+1;
+    level_tile_map[i].c = j+2;
+    level_tile_map[i].d = j+3;
 
     // create vertex struct - A
     level_tile_map[i].v_a.vertex_id = level_tile_map[i].a;
@@ -198,17 +197,14 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].i_left.c = level_tile_map[i].c;
 
     level_tile_map[i].i_right.a = level_tile_map[i].b;
-    level_tile_map[i].i_right.b = level_tile_map[i].d;
-    level_tile_map[i].i_right.c = level_tile_map[i].c;
+    level_tile_map[i].i_right.b = level_tile_map[i].c;
+    level_tile_map[i].i_right.c = level_tile_map[i].d;
 
-
-    if(level_tile_map[i].id%map_vertex_width == 0){offset += map_vertex_height;};
   }
 
 
 
-  //for(int t=0; t<level_tile_map.size(); t++)
-  for(int t=0; t<10; t++)
+  for(int t=0; t<level_tile_map.size(); t++)
   {
     std::cout << "Tile: " << level_tile_map[t].id << " - "<< level_tile_map[t].type << std::endl << 
     level_tile_map[t].x  << "," << level_tile_map[t].y << std::endl <<

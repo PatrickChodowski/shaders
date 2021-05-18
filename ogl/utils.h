@@ -159,5 +159,5 @@ glm::mat4 generate_mvp()
   glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
   glm::mat4 mvp = proj*view*model;
-  return proj;
+  return mvp;
 }

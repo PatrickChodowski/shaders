@@ -82,13 +82,13 @@ namespace shaders
     GLint success, len;
     GLsizei i, srclens[nsources];
 
-    logg::print("function compile_shader:: after declaration", 0);
+    logg::print("function compile_shader:: after declaration", 1);
 
     for (i = 0; i < nsources; ++i)
     {
       srclens[i] = (GLsizei)strlen(sources[i]);
     }
-    logg::print("function compile_shader:: after sources", 0);
+    logg::print("function compile_shader:: after sources", 1);
 
     std::cout << type << std::endl;
 
@@ -96,7 +96,7 @@ namespace shaders
     shader = glCreateShader(type);
 
 
-    logg::print("function compile_shader:: after glCreateShader", 0);
+    logg::print("function compile_shader:: after glCreateShader", 1);
 
     glShaderSource(shader, nsources, sources, srclens);
     glCompileShader(shader);
@@ -125,11 +125,11 @@ namespace shaders
 
     const char *shaderSource = read_file(filename);
 
-    logg::print("after read_file", 0);
+    logg::print("after read_file", 1);
     std::cout << eShaderType << std::endl;
 
     GLuint shader = compile_shader(eShaderType, 1, &shaderSource);
-    logg::print("after compile_shader", 0);
+    logg::print("after compile_shader", 1);
     return shader;
   }
 
@@ -142,29 +142,14 @@ namespace shaders
     std::string vsPath = std::string("./shaders/")+std::string(shader_name)+std::string(".vert");
     std::string fsPath = std::string("./shaders/")+std::string(shader_name)+std::string(".frag");
 
-    logg::print("before get_shader",0);
     vertexShader = get_shader(GL_VERTEX_SHADER, vsPath.c_str());
-
-    logg::print("after get vertex shader",0);
-
     fragmentShader = get_shader(GL_FRAGMENT_SHADER, fsPath.c_str());
-
-    logg::print("after get frag shader",0);
-
-
     shading_program = glCreateProgram();
-    logg::print("Shading program after create: " + std::to_string(shading_program),0);
-
 
     glAttachShader(shading_program, vertexShader);
-    logg::print("Shading program after attach vertex: " + std::to_string(shading_program),0);
-
     glAttachShader(shading_program, fragmentShader);
-    logg::print("Shading program after attach fragment: " + std::to_string(shading_program),0);
-
     glLinkProgram(shading_program);
-    logg::print("Shading program after link: " + std::to_string(shading_program),0);
-
+ 
     //Error Checking
     GLuint status;
     status = program_check(shading_program);
