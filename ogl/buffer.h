@@ -8,14 +8,14 @@ namespace buffer
   {
     // generate vertices array out of tiles struct
     int n_tiles = tiles.size();
+    n_tiles = 3;
     int n_vertices = n_tiles*4;
     int vertices_array_size = tiles::COUNT_VERTEX_ATTRIBUTES*n_vertices;
     float vertices_array[vertices_array_size];
 
-    
     for(int t=0; t<n_tiles; t++)
     {
-      int start_position = t*tiles::COUNT_VERTEX_ATTRIBUTES;
+      int start_position = t*tiles::COUNT_VERTEX_ATTRIBUTES*4;
 
       vertices_array[(start_position+0)] = tiles[t].v_a.x_pos;
       vertices_array[(start_position+1)] = tiles[t].v_a.y_pos;
@@ -65,13 +65,14 @@ namespace buffer
     std::cout << "Vertices array size: " << vertices_array_size << std::endl;
     std::cout << "Tiles size: " << n_tiles << std::endl;
 
-    for(int j =0; j < 21; j++)
+    for(int j =0; j < n_tiles; j++)
     {
       int i = j*tiles::COUNT_VERTEX_ATTRIBUTES;
      std::cout << vertices_array[i] << " " << vertices_array[i+1] << " " << vertices_array[i+2] << " " << vertices_array[i+3] << " " << vertices_array[i+4] 
      << " " << vertices_array[i+5] << " " << vertices_array[i+6] << " " << vertices_array[i+7] << " " << vertices_array[i+8] << " " << vertices_array[i+9] << std::endl; 
     }; 
 
+ 
 
     // generate indices array out of vector of Indices:
     int n_vindices = n_tiles*2;

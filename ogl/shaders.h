@@ -82,21 +82,16 @@ namespace shaders
     GLint success, len;
     GLsizei i, srclens[nsources];
 
-    logg::print("function compile_shader:: after declaration", 1);
-
     for (i = 0; i < nsources; ++i)
     {
       srclens[i] = (GLsizei)strlen(sources[i]);
     }
-    logg::print("function compile_shader:: after sources", 1);
 
     std::cout << type << std::endl;
 
     //logg::print("function compile_shader:: glCreateShader " + type, 0);
     shader = glCreateShader(type);
 
-
-    logg::print("function compile_shader:: after glCreateShader", 1);
 
     glShaderSource(shader, nsources, sources, srclens);
     glCompileShader(shader);
@@ -122,14 +117,9 @@ namespace shaders
     // loads a shader from file and returns the compiled shader
   GLuint get_shader(GLenum eShaderType, const char *filename)
   {
-
     const char *shaderSource = read_file(filename);
-
-    logg::print("after read_file", 1);
     std::cout << eShaderType << std::endl;
-
     GLuint shader = compile_shader(eShaderType, 1, &shaderSource);
-    logg::print("after compile_shader", 1);
     return shader;
   }
 
@@ -153,9 +143,6 @@ namespace shaders
     //Error Checking
     GLuint status;
     status = program_check(shading_program);
-    logg::print("CustomShader Status: " + std::to_string(status), 0);
-    logg::print("Shading program after program check: " + std::to_string(shading_program),0);
-
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 

@@ -139,8 +139,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_a.vertex_id = level_tile_map[i].a;
     level_tile_map[i].v_a.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_a.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_a.x_pos = level_tile_map[i].x;
-    level_tile_map[i].v_a.y_pos = level_tile_map[i].y;
+    level_tile_map[i].v_a.x_pos = (float)level_tile_map[i].x;
+    level_tile_map[i].v_a.y_pos = (float)level_tile_map[i].y;
     level_tile_map[i].v_a.z_pos = 0.0f;
     level_tile_map[i].v_a.r_col = 0.0f;
     level_tile_map[i].v_a.g_col = 0.0f;
@@ -153,8 +153,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_b.vertex_id = level_tile_map[i].b;
     level_tile_map[i].v_b.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_b.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_b.x_pos = level_tile_map[i].x + tile_dim  - VERTEX_OFFSET;
-    level_tile_map[i].v_b.y_pos = level_tile_map[i].y;
+    level_tile_map[i].v_b.x_pos = (float)level_tile_map[i].x + (float)tile_dim  - (float)VERTEX_OFFSET;
+    level_tile_map[i].v_b.y_pos = (float)level_tile_map[i].y;
     level_tile_map[i].v_b.z_pos = 0.0f;
     level_tile_map[i].v_b.r_col = 0.0f;
     level_tile_map[i].v_b.g_col = 0.0f;
@@ -167,8 +167,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_c.vertex_id = level_tile_map[i].c;
     level_tile_map[i].v_c.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_c.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_c.x_pos = level_tile_map[i].x;
-    level_tile_map[i].v_c.y_pos = level_tile_map[i].y + tile_dim;
+    level_tile_map[i].v_c.x_pos = (float)level_tile_map[i].x;
+    level_tile_map[i].v_c.y_pos = (float)level_tile_map[i].y + (float)tile_dim;
     level_tile_map[i].v_c.z_pos = 0.0f;
     level_tile_map[i].v_c.r_col = 0.0f;
     level_tile_map[i].v_c.g_col = 0.0f;
@@ -181,8 +181,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_d.vertex_id = level_tile_map[i].d;
     level_tile_map[i].v_d.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_d.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_d.x_pos = level_tile_map[i].x + tile_dim  - VERTEX_OFFSET;
-    level_tile_map[i].v_d.y_pos = level_tile_map[i].y + tile_dim;
+    level_tile_map[i].v_d.x_pos = (float)level_tile_map[i].x + (float)tile_dim  - (float)VERTEX_OFFSET;
+    level_tile_map[i].v_d.y_pos = (float)level_tile_map[i].y + (float)tile_dim;
     level_tile_map[i].v_d.z_pos = 0.0f;
     level_tile_map[i].v_d.r_col = 0.0f;
     level_tile_map[i].v_d.g_col = 0.0f;
@@ -204,13 +204,21 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
 
 
 
-  for(int t=0; t<level_tile_map.size(); t++)
+  // for(int t=0; t<level_tile_map.size(); t++)
+  for(int t=0; t<2; t++)
   {
     std::cout << "Tile: " << level_tile_map[t].id << " - "<< level_tile_map[t].type << std::endl << 
     level_tile_map[t].x  << "," << level_tile_map[t].y << std::endl <<
-    "Vertices:" << std::endl <<
-    level_tile_map[t].a << " " << level_tile_map[t].b << std::endl <<
-    level_tile_map[t].c << " " << level_tile_map[t].d << std::endl <<
+    // "Vertices:" << std::endl <<
+    // level_tile_map[t].a << " " << level_tile_map[t].b << std::endl <<
+    // level_tile_map[t].c << " " << level_tile_map[t].d << std::endl <<
+
+    "Vertices positions:"  << std::endl <<
+    level_tile_map[t].a << " " << level_tile_map[t].v_a.x_pos << "," << level_tile_map[t].v_a.y_pos << std::endl <<
+    level_tile_map[t].b << " " << level_tile_map[t].v_b.x_pos << "," << level_tile_map[t].v_b.y_pos << std::endl <<
+    level_tile_map[t].c << " " << level_tile_map[t].v_c.x_pos << "," << level_tile_map[t].v_c.y_pos << std::endl <<
+    level_tile_map[t].d << " " << level_tile_map[t].v_d.x_pos << "," << level_tile_map[t].v_d.y_pos << std::endl <<
+
     "Vindices:" << std::endl <<
     level_tile_map[t].i_left.a << " " << level_tile_map[t].i_left.b << " " << level_tile_map[t].i_left.c << std::endl <<
     level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
