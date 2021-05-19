@@ -13,11 +13,15 @@
     {
       switch (event.type)
       {
+      case SDL_MOUSEWHEEL:
+        if(event.wheel.y > 0) {ZOOM += 10;}
+        else if(event.wheel.y < 0){ZOOM -= 10;}
+        break;
       case SDL_QUIT:
         RUNNING = false;
         break;
 
-        case SDL_KEYDOWN:
+      case SDL_KEYDOWN:
         switch (event.key.keysym.sym)
         {
         case SDLK_LEFT:
@@ -39,9 +43,6 @@
           CURRENT_SHADER = "canvas";
           break;
         }
-
-
-
       };
     };
   };
@@ -51,12 +52,6 @@ int main()
 {
   textures::init();
   std::vector<tiles::Tile> level_map = tiles::load_level(TEMP_LEVEL_NAME, MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
-  glm::mat4 MVP = generate_mvp();
-
-  // std::map<int, Vertex> VERTICES = generate_vertices(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
-  // glm::mat4 MVP = generate_mvp();
-  // std::vector<Quad> QUADS = generate_quad_list(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT);
-  // std::vector<Vindex> VINDICES = generate_vindices(QUADS);
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -112,6 +107,8 @@ int main()
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
     glUniform1i(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "texture1"), 0);
+
+    glm::mat4 MVP = generate_mvp(ZOOM);
     glUniformMatrix4fv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "mvp"), 1, GL_FALSE, glm::value_ptr(MVP));
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
 

@@ -91,3 +91,4 @@ bool RUNNING = true;
 int CAMERA_SPEED = 20;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
+int ZOOM = 0;
