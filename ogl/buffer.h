@@ -8,7 +8,7 @@ namespace buffer
   {
     // generate vertices array out of tiles struct
     int n_tiles = tiles.size();
-    n_tiles = 3;
+    //n_tiles = 3;
     int n_vertices = n_tiles*4;
     int vertices_array_size = tiles::COUNT_VERTEX_ATTRIBUTES*n_vertices;
     float vertices_array[vertices_array_size];
@@ -65,12 +65,12 @@ namespace buffer
     std::cout << "Vertices array size: " << vertices_array_size << std::endl;
     std::cout << "Tiles size: " << n_tiles << std::endl;
 
-    for(int j =0; j < n_tiles; j++)
-    {
-      int i = j*tiles::COUNT_VERTEX_ATTRIBUTES;
-     std::cout << vertices_array[i] << " " << vertices_array[i+1] << " " << vertices_array[i+2] << " " << vertices_array[i+3] << " " << vertices_array[i+4] 
-     << " " << vertices_array[i+5] << " " << vertices_array[i+6] << " " << vertices_array[i+7] << " " << vertices_array[i+8] << " " << vertices_array[i+9] << std::endl; 
-    }; 
+    // for(int j =0; j < n_tiles; j++)
+    // {
+    //   int i = j*tiles::COUNT_VERTEX_ATTRIBUTES;
+    //  std::cout << vertices_array[i] << " " << vertices_array[i+1] << " " << vertices_array[i+2] << " " << vertices_array[i+3] << " " << vertices_array[i+4] 
+    //  << " " << vertices_array[i+5] << " " << vertices_array[i+6] << " " << vertices_array[i+7] << " " << vertices_array[i+8] << " " << vertices_array[i+9] << std::endl; 
+    // }; 
 
  
 
@@ -80,7 +80,7 @@ namespace buffer
     unsigned int vindices_array[vindices_array_size];
     for(int t=0; t<n_tiles; t++)
     {
-      int start_position = t*3;
+      int start_position = t*3*2;
       vindices_array[(start_position+0)] = tiles[t].i_left.a;
       vindices_array[(start_position+1)] = tiles[t].i_left.b;
       vindices_array[(start_position+2)] = tiles[t].i_left.c;
@@ -89,8 +89,8 @@ namespace buffer
       vindices_array[(start_position+4)] = tiles[t].i_right.b;
       vindices_array[(start_position+5)] = tiles[t].i_right.c;
 
-      std::cout << tiles[t].i_left.a << " " << tiles[t].i_left.b << " " << tiles[t].i_left.c << std::endl;
-      std::cout << tiles[t].i_right.a << " " << tiles[t].i_right.b << " " << tiles[t].i_right.c << std::endl;
+      // std::cout << tiles[t].i_left.a << " " << tiles[t].i_left.b << " " << tiles[t].i_left.c << std::endl;
+      // std::cout << tiles[t].i_right.a << " " << tiles[t].i_right.b << " " << tiles[t].i_right.c << std::endl;
 
     }
   // vertex is not position, vertex can have much more than the position - so we pass a lot of data in vertices

@@ -1,6 +1,6 @@
-{'x': 0, 'y': 0, 'w': 64, 'h': 64, 'type': 10, 'solid': 0, 'norm_x_start': 0, norm_x_end': 0.264}
-{'x': 64, 'y': 0, 'w': 64, 'h': 64, 'type': 20, 'solid': 0, 'norm_x_start': 0.265, 'norm_x_end': 0.512}
-{'x': 128, 'y': 0, 'w': 64, 'h': 64, 'type': 12, 'solid': 1, 'norm_x_start': 0.513, 'norm_x_end': 0.776}
+{'x': 0, 'y': 0, 'w': 64, 'h': 64, 'type': 10, 'solid': 0, 'x_end': 63}
+{'x': 64, 'y': 0, 'w': 64, 'h': 64, 'type': 20, 'solid': 0, 'x_end': 127}
+{'x': 128, 'y': 0, 'w': 64, 'h': 64, 'type': 12, 'solid': 1, 'x_end': 196}
 
 
 

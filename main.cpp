@@ -50,7 +50,7 @@
 int main()
 {
   textures::init();
-  std::vector<tiles::Tile> level_map = tiles::load_level("test2", MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
+  std::vector<tiles::Tile> level_map = tiles::load_level(TEMP_LEVEL_NAME, MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
   glm::mat4 MVP = generate_mvp();
 
   // std::map<int, Vertex> VERTICES = generate_vertices(MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);

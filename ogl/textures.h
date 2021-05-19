@@ -9,8 +9,11 @@ namespace textures
     int y;
     int w;
     int h;
-    int norm_x_start;
-    int norm_x_end;
+    int x_end;
+
+
+    float norm_x_start;
+    float norm_x_end;
   };
 
     struct TileFrame
@@ -21,8 +24,10 @@ namespace textures
     int w;
     int h;
     int solid;
-    int norm_x_start;
-    int norm_x_end;
+    int x_end;
+
+    float norm_x_start;
+    float norm_x_end;
   };
 
 
@@ -67,7 +72,7 @@ namespace textures
     // loads texture into CPU and later into GPU
     // use this to flip the image on read
     // I might have reversed the vertices instead by accident ->
-    stbi_set_flip_vertically_on_load(true);  
+    stbi_set_flip_vertically_on_load(false);  
 
     // this reads texture information 
     unsigned char *image_data = stbi_load(img_name.c_str(), &width, &height, &n_channels, 4); 
@@ -128,7 +133,7 @@ namespace textures
     tmp << json_file.rdbuf();
     std::string s = tmp.str();
 
-    std::regex e("\\{(.*) (.*) (.*) (.*) (.*) (.*) (.*) (.*)\\}");
+    std::regex e("\\{(.*) (.*) (.*) (.*) (.*) (.*) (.*)\\}");
     std::regex e2(": .([0-9])*");
     std::regex_token_iterator<std::string::iterator> rend;
     std::regex_token_iterator<std::string::iterator> a(s.begin(), s.end(), e);
@@ -155,9 +160,10 @@ namespace textures
       f.h = numbers_v[3];
       f.type = numbers_v[4];
       f.solid = numbers_v[5];
+      f.x_end = numbers_v[6];
 
-      f.norm_x_start = numbers_v[6];
-      f.norm_x_end = numbers_v[7];
+      f.norm_x_start =  (float)f.x/196.0;
+      f.norm_x_end =  (float)f.x_end/196.0;
 
       frames.insert({f.type, f});
     }

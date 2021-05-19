@@ -77,8 +77,6 @@ int VERTEX_OFFSET = 1;
     struct Vindex i_left;
     // a b
     // c
-
-
     struct Vindex i_right;
     //   b
     // c d
@@ -102,6 +100,7 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
 
   int n_tiles = map_vertex_width*map_vertex_height;
   int TILE_COUNTER = 1;
+
 
   // read in the tile info
   if (in_file.is_open())
@@ -160,36 +159,36 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     level_tile_map[i].v_b.g_col = 0.0f;
     level_tile_map[i].v_b.b_col = 0.0f;
     level_tile_map[i].v_b.a_col = 1.0f;
-    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
-    level_tile_map[i].v_a.tex_coord_y = 0.0f;
+    level_tile_map[i].v_b.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
+    level_tile_map[i].v_b.tex_coord_y = 0.0f;
 
     // create vertex struct - C
     level_tile_map[i].v_c.vertex_id = level_tile_map[i].c;
     level_tile_map[i].v_c.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_c.tile_type = level_tile_map[i].type;
     level_tile_map[i].v_c.x_pos = (float)level_tile_map[i].x;
-    level_tile_map[i].v_c.y_pos = (float)level_tile_map[i].y + (float)tile_dim;
+    level_tile_map[i].v_c.y_pos = (float)level_tile_map[i].y + (float)tile_dim - (float)VERTEX_OFFSET;
     level_tile_map[i].v_c.z_pos = 0.0f;
     level_tile_map[i].v_c.r_col = 0.0f;
     level_tile_map[i].v_c.g_col = 0.0f;
     level_tile_map[i].v_c.b_col = 0.0f;
     level_tile_map[i].v_c.a_col = 1.0f;
-    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
-    level_tile_map[i].v_a.tex_coord_y = 1.0f;
+    level_tile_map[i].v_c.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
+    level_tile_map[i].v_c.tex_coord_y = 1.0f;
 
     // create vertex struct - D
     level_tile_map[i].v_d.vertex_id = level_tile_map[i].d;
     level_tile_map[i].v_d.tile_id = level_tile_map[i].id;
     level_tile_map[i].v_d.tile_type = level_tile_map[i].type;
     level_tile_map[i].v_d.x_pos = (float)level_tile_map[i].x + (float)tile_dim  - (float)VERTEX_OFFSET;
-    level_tile_map[i].v_d.y_pos = (float)level_tile_map[i].y + (float)tile_dim;
+    level_tile_map[i].v_d.y_pos = (float)level_tile_map[i].y + (float)tile_dim - (float)VERTEX_OFFSET;
     level_tile_map[i].v_d.z_pos = 0.0f;
     level_tile_map[i].v_d.r_col = 0.0f;
     level_tile_map[i].v_d.g_col = 0.0f;
     level_tile_map[i].v_d.b_col = 0.0f;
     level_tile_map[i].v_d.a_col = 1.0f;
-    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
-    level_tile_map[i].v_a.tex_coord_y = 1.0f;
+    level_tile_map[i].v_d.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
+    level_tile_map[i].v_d.tex_coord_y = 1.0f;
 
     // create vindices 
     level_tile_map[i].i_left.a = level_tile_map[i].a;
@@ -205,24 +204,21 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
 
 
   // for(int t=0; t<level_tile_map.size(); t++)
-  for(int t=0; t<2; t++)
-  {
-    std::cout << "Tile: " << level_tile_map[t].id << " - "<< level_tile_map[t].type << std::endl << 
-    level_tile_map[t].x  << "," << level_tile_map[t].y << std::endl <<
-    // "Vertices:" << std::endl <<
-    // level_tile_map[t].a << " " << level_tile_map[t].b << std::endl <<
-    // level_tile_map[t].c << " " << level_tile_map[t].d << std::endl <<
+  // for(int t=0; t<2; t++)
+  // {
+  //   std::cout << "Tile: " << level_tile_map[t].id << " - "<< level_tile_map[t].type << std::endl << 
+  //   level_tile_map[t].x  << "," << level_tile_map[t].y << std::endl <<
+ 
+  //   "Vertices positions:"  << std::endl <<
+  //   level_tile_map[t].a << " " << level_tile_map[t].v_a.x_pos << "," << level_tile_map[t].v_a.y_pos << std::endl <<
+  //   level_tile_map[t].b << " " << level_tile_map[t].v_b.x_pos << "," << level_tile_map[t].v_b.y_pos << std::endl <<
+  //   level_tile_map[t].c << " " << level_tile_map[t].v_c.x_pos << "," << level_tile_map[t].v_c.y_pos << std::endl <<
+  //   level_tile_map[t].d << " " << level_tile_map[t].v_d.x_pos << "," << level_tile_map[t].v_d.y_pos << std::endl <<
 
-    "Vertices positions:"  << std::endl <<
-    level_tile_map[t].a << " " << level_tile_map[t].v_a.x_pos << "," << level_tile_map[t].v_a.y_pos << std::endl <<
-    level_tile_map[t].b << " " << level_tile_map[t].v_b.x_pos << "," << level_tile_map[t].v_b.y_pos << std::endl <<
-    level_tile_map[t].c << " " << level_tile_map[t].v_c.x_pos << "," << level_tile_map[t].v_c.y_pos << std::endl <<
-    level_tile_map[t].d << " " << level_tile_map[t].v_d.x_pos << "," << level_tile_map[t].v_d.y_pos << std::endl <<
-
-    "Vindices:" << std::endl <<
-    level_tile_map[t].i_left.a << " " << level_tile_map[t].i_left.b << " " << level_tile_map[t].i_left.c << std::endl <<
-    level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
-  }
+  //   "Vindices:" << std::endl <<
+  //   level_tile_map[t].i_left.a << " " << level_tile_map[t].i_left.b << " " << level_tile_map[t].i_left.c << std::endl <<
+  //   level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
+  // }
 
 
   
