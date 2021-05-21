@@ -245,7 +245,7 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
   {
     std::vector<Tile> objects = {};
     struct Tile quad;
-    quad.x=400;
+    quad.x=3000;
     quad.y=300;
     quad.id=0;
     quad.type=10;

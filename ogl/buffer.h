@@ -88,6 +88,10 @@ namespace buffer
       vindices_array[(start_position+5)] = tiles[t].i_right.c;
     }
 
+    GlCall(glEnable(GL_BLEND));
+    GlCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
+
 
   // vertex is not position, vertex can have much more than the position - so we pass a lot of data in vertices
   // then we generate buffer, bind it and add data ( vertices data)
