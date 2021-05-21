@@ -92,3 +92,7 @@ int CAMERA_SPEED = 20;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
 int ZOOM = 0;
+
+bool CAMERA_CENTRIC = true;
+int MOVE_CAMERA_X = 0;
+int MOVE_CAMERA_Y = 0;
