@@ -44,8 +44,6 @@
 #include "glm/gtc/type_ptr.hpp"
 
 
-
-
 /// woooooo
 // http://docs.gl/
 
@@ -90,6 +88,9 @@ int ZOOM = 0;
 int ZOOM_SPEED = 100;
 
 bool CAMERA_CENTRIC = true;
+
+
+
 
 
 

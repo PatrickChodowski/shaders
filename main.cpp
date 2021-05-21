@@ -63,6 +63,19 @@ int main()
       light_coords[0] += MOVE_CAMERA_X;
       light_coords[1] += MOVE_CAMERA_Y;
     }
+    
+    int rand_x = rand()%(405-400 + 1) + 400;
+    int rand_y = rand()%(305-300 + 1) + 300;
+
+    // very temporary solution
+    QUADS[(QUADS.size() - 1)].v_a.x_pos = rand_x;
+    QUADS[(QUADS.size() - 1)].v_a.y_pos = rand_y;
+    QUADS[(QUADS.size() - 1)].v_b.x_pos = rand_x+TILE_DIM;
+    QUADS[(QUADS.size() - 1)].v_b.y_pos = rand_y;
+    QUADS[(QUADS.size() - 1)].v_c.x_pos = rand_x;
+    QUADS[(QUADS.size() - 1)].v_c.y_pos = rand_y+TILE_DIM;
+    QUADS[(QUADS.size() - 1)].v_d.x_pos = rand_x+TILE_DIM;
+    QUADS[(QUADS.size() - 1)].v_d.y_pos = rand_y+TILE_DIM;
 
     // dynamic buffer
     buffer::update(QUADS);

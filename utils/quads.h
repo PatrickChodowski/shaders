@@ -225,7 +225,7 @@ std::vector<Quad> load_level(std::string lvl_name, int map_vertex_width, int map
     std::vector<Quad> objects = {};
     struct Quad quad;
     quad.x=300;
-    quad.y=300;
+    quad.y=400;
     quad.id=0;
     quad.type=10;
     quad.sheet_name = "redripper";
