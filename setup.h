@@ -80,23 +80,23 @@ bool RUNNING = true;
 #include "ogl/utils.h"
 #include "ogl/textures.h"
 #include "utils/quads.h"
-
-
-
 #include "ogl/shaders.h"
 #include "ogl/buffer.h"
 
-// #include "World.h"
-
 int CAMERA_SPEED = 20;
+
+
+// int CAMERA_X = (WINDOW_WIDTH/2);
+// int CAMERA_Y = (WINDOW_HEIGHT/2);
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
+int MOVE_CAMERA_X = 0;
+int MOVE_CAMERA_Y = 0;
 int ZOOM = 0;
 int ZOOM_SPEED = 100;
 
 bool CAMERA_CENTRIC = true;
-int MOVE_CAMERA_X = 0;
-int MOVE_CAMERA_Y = 0;
+
 
 
 
@@ -104,8 +104,9 @@ int MOVE_CAMERA_Y = 0;
   void handle_events(SDL_Event event)
   // subsystem for handling players input
   {
-    CAMERA_X = 0;
-    CAMERA_Y = 0;
+
+    MOVE_CAMERA_X = 0;
+    MOVE_CAMERA_Y = 0;
     while (SDL_PollEvent(&event))
     {
       switch (event.type)
@@ -122,16 +123,16 @@ int MOVE_CAMERA_Y = 0;
         switch (event.key.keysym.sym)
         {
         case SDLK_LEFT:
-          CAMERA_X -= CAMERA_SPEED;
+          MOVE_CAMERA_X -= CAMERA_SPEED;
           break;
         case SDLK_RIGHT:
-          CAMERA_X += CAMERA_SPEED;
+          MOVE_CAMERA_X += CAMERA_SPEED;
           break;
         case SDLK_UP:
-          CAMERA_Y += CAMERA_SPEED;
+          MOVE_CAMERA_Y += CAMERA_SPEED;
           break;
         case SDLK_DOWN:
-          CAMERA_Y -= CAMERA_SPEED;
+          MOVE_CAMERA_Y -= CAMERA_SPEED;
           break;
         case SDLK_l:
           CURRENT_SHADER = "light_radius_shading_program";
@@ -142,4 +143,11 @@ int MOVE_CAMERA_Y = 0;
         }
       };
     };
+
+    // if its true, than camera will stay in the centre and rest of the environment will be moving
+    if(CAMERA_CENTRIC)
+    {
+      CAMERA_X += MOVE_CAMERA_X;
+      CAMERA_Y += MOVE_CAMERA_Y;
+    } 
   };

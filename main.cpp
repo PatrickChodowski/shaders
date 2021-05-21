@@ -35,7 +35,16 @@ int main()
   shaders::shader_map["canvas"] = shaders::custom_shaders("canvas");
 
   glReleaseShaderCompiler();
-  float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
+
+  float light_coords[2];
+  if(CAMERA_CENTRIC){
+    light_coords[0] = (float)(WINDOW_WIDTH/2);
+    light_coords[1]  = (float)(WINDOW_HEIGHT/2);
+  } else {
+    light_coords[0] = (float)CAMERA_X;
+    light_coords[1]  = (float)CAMERA_Y;
+  }
+
 
   unsigned int texture0 = textures::load(0, "./assets/dungeon_spritesheet.png", 256, 64, 4);
   unsigned int texture1 = textures::load(1, "./assets/redripper_spritesheet.png", 64, 64, 4);
@@ -47,15 +56,19 @@ int main()
     SDL_Event event;
     handle_events(event);
 
-    light_coords[0] += CAMERA_X;
-    light_coords[1] += CAMERA_Y;
+    // change light coords for player if camera is not centric
+    if(!CAMERA_CENTRIC)
+    {
+      light_coords[0] += MOVE_CAMERA_X;
+      light_coords[1] += MOVE_CAMERA_Y;
+    }
 
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
     int samplers[2] = {0,1};
     glUniform1iv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "textures"), 2, samplers);
 
-    glm::mat4 MVP = generate_mvp(ZOOM);
+    glm::mat4 MVP = generate_mvp(ZOOM, -CAMERA_X, CAMERA_Y);
     glUniformMatrix4fv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "mvp"), 1, GL_FALSE, glm::value_ptr(MVP));
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
 
