@@ -3,8 +3,7 @@
 int main()
 {
   textures::init();
-  std::vector<tiles::Tile> level_map = tiles::load_level(TEMP_LEVEL_NAME, MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
-  std::vector<tiles::Tile> entities = tiles::load_objects();
+  std::vector<quads::Quad> QUADS  = quads::init();
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -31,10 +30,7 @@ int main()
   GLenum err = glewInit();
   shaders::check_glew(err);
 
-  //add all quads list together
-  level_map.insert( level_map.end(), entities.begin(), entities.end() );
-
-  buffer::init(level_map);
+  buffer::init(QUADS);
   shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
   shaders::shader_map["canvas"] = shaders::custom_shaders("canvas");
 
@@ -66,7 +62,7 @@ int main()
 
     glBindVertexArray(buffer::VAO); 
     // batch drawing:
-    glDrawElements(GL_TRIANGLES, level_map.size()*6, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, QUADS.size()*6, GL_UNSIGNED_INT, nullptr);
 
 		SDL_GL_SwapWindow(WINDOW);
     SDL_Delay(1000 / 60);

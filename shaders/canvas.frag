@@ -15,7 +15,7 @@ void main()
   int texture_index = int(out_texture_id);
   //frag_color = out_color;
   frag_color = texture(textures[texture_index], out_tex_coord);
-
+  //frag_color.a = 0.5;
   //frag_color = vec4(out_texture_id,out_texture_id,out_texture_id,1.0f);
 }
 

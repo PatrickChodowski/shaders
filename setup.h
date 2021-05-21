@@ -79,7 +79,7 @@ bool RUNNING = true;
 #include "utils/logging.h"
 #include "ogl/utils.h"
 #include "ogl/textures.h"
-#include "utils/tiles.h"
+#include "utils/quads.h"
 
 
 
@@ -92,7 +92,7 @@ int CAMERA_SPEED = 20;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
 int ZOOM = 0;
-int ZOOM_SPEED = 300;
+int ZOOM_SPEED = 100;
 
 bool CAMERA_CENTRIC = true;
 int MOVE_CAMERA_X = 0;

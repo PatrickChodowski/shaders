@@ -5,20 +5,21 @@ namespace buffer
 {
 
   unsigned int VBO, VAO, EBO;
-  void init(std::vector<tiles::Tile> tiles)
+
+  void init(std::vector<quads::Quad> tiles)
   {
     // generate vertices array out of tiles struct
     int n_tiles = tiles.size();
     //n_tiles = 3;
     int n_vertices = n_tiles*4;
-    int vertices_array_size = tiles::COUNT_VERTEX_ATTRIBUTES*n_vertices;
+    int vertices_array_size = quads::COUNT_VERTEX_ATTRIBUTES*n_vertices;
     float vertices_array[vertices_array_size];
 
 
     for(int t=0; t<n_tiles; t++)
     {
-      int start_position = t*tiles::COUNT_VERTEX_ATTRIBUTES*4;
-      int cva = tiles::COUNT_VERTEX_ATTRIBUTES; // 11
+      int start_position = t*quads::COUNT_VERTEX_ATTRIBUTES*4;
+      int cva = quads::COUNT_VERTEX_ATTRIBUTES; // 11
 
       vertices_array[(start_position)] = tiles[t].v_a.x_pos;
       vertices_array[(start_position+1)] = tiles[t].v_a.y_pos;
@@ -87,10 +88,9 @@ namespace buffer
       vindices_array[(start_position+4)] = tiles[t].i_right.b;
       vindices_array[(start_position+5)] = tiles[t].i_right.c;
     }
-
-    GlCall(glEnable(GL_BLEND));
-    GlCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
-
+    // dont get this part now
+    // GlCall(glEnable(GL_BLEND));
+    // GlCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 
   // vertex is not position, vertex can have much more than the position - so we pass a lot of data in vertices
@@ -111,23 +111,23 @@ namespace buffer
 
     // new version:
     // position attribute:
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, quads::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); // enable this attribute at the end
 
     // color attribute:
-    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, quads::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1); // enable this attribute at the end
 
     // tile_type attribute
-    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(7 * sizeof(float)));
+    glVertexAttribPointer(2, 1, GL_FLOAT, GL_FALSE, quads::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(7 * sizeof(float)));
     glEnableVertexAttribArray(2); // enable this attribute at the end
 
     // in texture coordinates attribute
-    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(8 * sizeof(float)));
+    glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, quads::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(8 * sizeof(float)));
     glEnableVertexAttribArray(3); // enable this attribute at the end
 
     // in texture id attribute
-    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, tiles::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(10 * sizeof(float)));
+    glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, quads::COUNT_VERTEX_ATTRIBUTES * sizeof(float), (void*)(10 * sizeof(float)));
     glEnableVertexAttribArray(4); // enable this attribute at the end
 
 

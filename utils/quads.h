@@ -5,7 +5,7 @@
 // We read level from the file - it gives information about each tile
 // 
 
-namespace tiles
+namespace quads
 {
   struct Vindex
   {  
@@ -51,7 +51,7 @@ int VERTEX_OFFSET = 1;
 
 
 
-  struct Tile
+  struct Quad
   {
     int id;
     int x;
@@ -92,7 +92,7 @@ int VERTEX_OFFSET = 1;
 // and then assign vertices to each tile, and construct indices 
 // then we will store information in vector of Tile structs =  level_map
 
-std::vector<Tile> assign_vertices(std::vector<Tile> quads)
+std::vector<Quad> assign_vertices(std::vector<Quad> quads)
 {
   for(int i = 0; i < quads.size(); i++)
   { 
@@ -183,9 +183,9 @@ std::vector<Tile> assign_vertices(std::vector<Tile> quads)
 
 
 
-std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map_vertex_height, int tile_dim)
+std::vector<Quad> load_level(std::string lvl_name, int map_vertex_width, int map_vertex_height, int tile_dim)
 {
-  std::vector<Tile> level_tile_map = {};
+  std::vector<Quad> level_tile_map = {};
   std::string file_path = "maps/" + lvl_name;
   std::ifstream in_file;
   in_file.open(file_path.c_str());
@@ -201,60 +201,74 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
       {
         for (int c = 0; c < map_vertex_width; c++)
         {
-          struct Tile tile;
-          tile.x = c * tile_dim;
-          tile.y = r * tile_dim;
-          in_file >> tile.type;
-          tile.id = TILE_COUNTER;
-          tile.sheet_name = "dungeon";
-          level_tile_map.push_back(tile);
+          struct Quad quad;
+          quad.x = c * tile_dim;
+          quad.y = r * tile_dim;
+          in_file >> quad.type;
+          quad.id = TILE_COUNTER;
+          quad.sheet_name = "dungeon";
+          level_tile_map.push_back(quad);
           TILE_COUNTER += 1;
         };
       } 
   }
   in_file.close();
 
-  // assign vertices to tiles
-  int vertex_width_size = map_vertex_width*2; 
-  int vertex_height_size = map_vertex_height*2; 
-
-  std::vector<Tile> quads = assign_vertices(level_tile_map);
+  //std::vector<Tile> quads = assign_vertices(level_tile_map);
   
-  // for(int t=0; t<level_tile_map.size(); t++)
-  // for(int t=0; t<2; t++)
-  // {
-  //   std::cout << "Tile: " << level_tile_map[t].id << " - "<< level_tile_map[t].type << std::endl << 
-  //   level_tile_map[t].x  << "," << level_tile_map[t].y << std::endl <<
- 
-  //   "Vertices positions:"  << std::endl <<
-  //   level_tile_map[t].a << " " << level_tile_map[t].v_a.x_pos << "," << level_tile_map[t].v_a.y_pos << std::endl <<
-  //   level_tile_map[t].b << " " << level_tile_map[t].v_b.x_pos << "," << level_tile_map[t].v_b.y_pos << std::endl <<
-  //   level_tile_map[t].c << " " << level_tile_map[t].v_c.x_pos << "," << level_tile_map[t].v_c.y_pos << std::endl <<
-  //   level_tile_map[t].d << " " << level_tile_map[t].v_d.x_pos << "," << level_tile_map[t].v_d.y_pos << std::endl <<
-
-  //   "Vindices:" << std::endl <<
-  //   level_tile_map[t].i_left.a << " " << level_tile_map[t].i_left.b << " " << level_tile_map[t].i_left.c << std::endl <<
-  //   level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
-  // }
-
-  return quads;
+  return level_tile_map;
 }
 
   // // to the same for other objects?
-  std::vector<Tile> load_objects()
+  std::vector<Quad> load_objects()
   {
-    std::vector<Tile> objects = {};
-    struct Tile quad;
-    quad.x=3000;
+    std::vector<Quad> objects = {};
+    struct Quad quad;
+    quad.x=300;
     quad.y=300;
     quad.id=0;
     quad.type=10;
     quad.sheet_name = "redripper";
     objects.push_back(quad);
 
-
+    //std::vector<Tile> quads = assign_vertices(objects);
     return objects;
   }
+
+
+  void print_out_quads(std::vector<Quad> quads)
+  {
+    for(int t=0; t<quads.size(); t++)
+  //for(int t=0; t<2; t++)
+    {
+      std::cout << "Quad: " << quads[t].id << " - "<< quads[t].type << std::endl << 
+      quads[t].x  << "," << quads[t].y << std::endl <<
+  
+      "Vertices positions:"  << std::endl <<
+      quads[t].a << " " << quads[t].v_a.x_pos << "," << quads[t].v_a.y_pos << std::endl <<
+      quads[t].b << " " << quads[t].v_b.x_pos << "," << quads[t].v_b.y_pos << std::endl <<
+      quads[t].c << " " << quads[t].v_c.x_pos << "," << quads[t].v_c.y_pos << std::endl <<
+      quads[t].d << " " << quads[t].v_d.x_pos << "," << quads[t].v_d.y_pos << std::endl <<
+
+      "Vindices:" << std::endl <<
+      quads[t].i_left.a << " " << quads[t].i_left.b << " " << quads[t].i_left.c << std::endl <<
+      quads[t].i_right.a << " " << quads[t].i_right.b << " " << quads[t].i_right.c << std::endl;
+    }
+  }
+
+
+  std::vector<Quad> init()
+  {
+    std::vector<Quad> level_map = load_level(TEMP_LEVEL_NAME, MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
+    std::vector<Quad> entities = load_objects();
+    //add all quads list together
+    level_map.insert( level_map.end(), entities.begin(), entities.end() );
+    std::vector<Quad> quads = assign_vertices(level_map);
+    // print_out_quads(quads);
+    return quads;
+  }
+
+
 
 }
 
