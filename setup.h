@@ -92,7 +92,54 @@ int CAMERA_SPEED = 20;
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
 int ZOOM = 0;
+int ZOOM_SPEED = 300;
 
 bool CAMERA_CENTRIC = true;
 int MOVE_CAMERA_X = 0;
 int MOVE_CAMERA_Y = 0;
+
+
+
+
+  void handle_events(SDL_Event event)
+  // subsystem for handling players input
+  {
+    CAMERA_X = 0;
+    CAMERA_Y = 0;
+    while (SDL_PollEvent(&event))
+    {
+      switch (event.type)
+      {
+      case SDL_MOUSEWHEEL:
+        if(event.wheel.y > 0) {ZOOM += ZOOM_SPEED;}
+        else if(event.wheel.y < 0){ZOOM -= ZOOM_SPEED;}
+        break;
+      case SDL_QUIT:
+        RUNNING = false;
+        break;
+
+      case SDL_KEYDOWN:
+        switch (event.key.keysym.sym)
+        {
+        case SDLK_LEFT:
+          CAMERA_X -= CAMERA_SPEED;
+          break;
+        case SDLK_RIGHT:
+          CAMERA_X += CAMERA_SPEED;
+          break;
+        case SDLK_UP:
+          CAMERA_Y += CAMERA_SPEED;
+          break;
+        case SDLK_DOWN:
+          CAMERA_Y -= CAMERA_SPEED;
+          break;
+        case SDLK_l:
+          CURRENT_SHADER = "light_radius_shading_program";
+          break;
+        case SDLK_g:
+          CURRENT_SHADER = "canvas";
+          break;
+        }
+      };
+    };
+  };

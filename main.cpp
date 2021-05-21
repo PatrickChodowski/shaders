@@ -1,57 +1,10 @@
 #include "setup.h"
 
-
-
-/// time to allow texture book and variable texture types
-
-  void handle_events(SDL_Event event)
-  // subsystem for handling players input
-  {
-    CAMERA_X = 0;
-    CAMERA_Y = 0;
-    while (SDL_PollEvent(&event))
-    {
-      switch (event.type)
-      {
-      case SDL_MOUSEWHEEL:
-        if(event.wheel.y > 0) {ZOOM += 10;}
-        else if(event.wheel.y < 0){ZOOM -= 10;}
-        break;
-      case SDL_QUIT:
-        RUNNING = false;
-        break;
-
-      case SDL_KEYDOWN:
-        switch (event.key.keysym.sym)
-        {
-        case SDLK_LEFT:
-          CAMERA_X -= CAMERA_SPEED;
-          break;
-        case SDLK_RIGHT:
-          CAMERA_X += CAMERA_SPEED;
-          break;
-        case SDLK_UP:
-          CAMERA_Y += CAMERA_SPEED;
-          break;
-        case SDLK_DOWN:
-          CAMERA_Y -= CAMERA_SPEED;
-          break;
-        case SDLK_l:
-          CURRENT_SHADER = "light_radius_shading_program";
-          break;
-        case SDLK_g:
-          CURRENT_SHADER = "canvas";
-          break;
-        }
-      };
-    };
-  };
-
-
 int main()
 {
   textures::init();
   std::vector<tiles::Tile> level_map = tiles::load_level(TEMP_LEVEL_NAME, MAP_VERTEX_WIDTH, MAP_VERTEX_HEIGHT, TILE_DIM);
+  std::vector<tiles::Tile> entities = tiles::load_objects();
 
   SDL_Init(SDL_INIT_VIDEO);
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -76,27 +29,22 @@ int main()
   glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 
   GLenum err = glewInit();
-
-
-
   shaders::check_glew(err);
 
-  // add objects map?
+  //add all quads list together
+  level_map.insert( level_map.end(), entities.begin(), entities.end() );
+
   buffer::init(level_map);
-  
-
-  //// level data
-  //world::init_lvl(LEVEL_NAME);
-
-  unsigned int texture1 = textures::load(1, "./assets/dungeon_spritesheet.png", 256, 64, 4);
-  textures::bind(texture1, 0);
-
   shaders::shader_map["light_radius_shading_program"] = shaders::custom_shaders("light_radius_rect");
   shaders::shader_map["canvas"] = shaders::custom_shaders("canvas");
 
   glReleaseShaderCompiler();
   float light_coords[2] = {(float)(WINDOW_WIDTH/2), (float)(WINDOW_HEIGHT/2)};
-  //float resolution[2] = {(float)WINDOW_WIDTH, (float)WINDOW_HEIGHT};
+
+  unsigned int texture0 = textures::load(0, "./assets/dungeon_spritesheet.png", 256, 64, 4);
+  unsigned int texture1 = textures::load(1, "./assets/redripper_spritesheet.png", 64, 64, 4);
+  textures::bind(texture0, 0);
+  textures::bind(texture1, 1);
 
   while(RUNNING)
   {
@@ -108,13 +56,13 @@ int main()
 
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
-    glUniform1i(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "texture1"), 0);
+    int samplers[2] = {0,1};
+    glUniform1iv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "textures"), 2, samplers);
 
     glm::mat4 MVP = generate_mvp(ZOOM);
     glUniformMatrix4fv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "mvp"), 1, GL_FALSE, glm::value_ptr(MVP));
     glUseProgram(shaders::shader_map[CURRENT_SHADER]);
 
-    textures::bind(texture1, 0);
 
     glBindVertexArray(buffer::VAO); 
     // batch drawing:

@@ -32,13 +32,14 @@ struct Vertex
   double tile_type;
   double tex_coord_x;
   double tex_coord_y;
+  double texture_id;
 
   /// not counted as VERTEX ATTRIBUTES - yet
   int tile_id;
   int vertex_id;
 };
 
-int COUNT_VERTEX_ATTRIBUTES = 10;
+int COUNT_VERTEX_ATTRIBUTES = 11;
 int VERTEX_OFFSET = 1;
 
 // Tile will contain information about:
@@ -115,6 +116,7 @@ std::vector<Tile> assign_vertices(std::vector<Tile> quads)
     quads[i].v_a.a_col = 1.0f;
     quads[i].v_a.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_start;
     quads[i].v_a.tex_coord_y = 0.0f;
+    quads[i].v_a.texture_id = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].texture_id;
 
     // create vertex struct - B
     quads[i].v_b.vertex_id = quads[i].b;
@@ -129,6 +131,8 @@ std::vector<Tile> assign_vertices(std::vector<Tile> quads)
     quads[i].v_b.a_col = 1.0f;
     quads[i].v_b.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_end;
     quads[i].v_b.tex_coord_y = 0.0f;
+    quads[i].v_b.texture_id = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].texture_id;
+
 
     // create vertex struct - C
     quads[i].v_c.vertex_id = quads[i].c;
@@ -143,6 +147,8 @@ std::vector<Tile> assign_vertices(std::vector<Tile> quads)
     quads[i].v_c.a_col = 1.0f;
     quads[i].v_c.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_start;
     quads[i].v_c.tex_coord_y = 1.0f;
+    quads[i].v_c.texture_id = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].texture_id;
+
 
     // create vertex struct - D
     quads[i].v_d.vertex_id = quads[i].d;
@@ -157,6 +163,8 @@ std::vector<Tile> assign_vertices(std::vector<Tile> quads)
     quads[i].v_d.a_col = 1.0f;
     quads[i].v_d.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_end;
     quads[i].v_d.tex_coord_y = 1.0f;
+    quads[i].v_d.texture_id = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].texture_id;
+
 
     // create vindices 
     quads[i].i_left.a = quads[i].a;
@@ -240,6 +248,7 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
     quad.x=400;
     quad.y=300;
     quad.id=0;
+    quad.type=10;
     quad.sheet_name = "redripper";
     objects.push_back(quad);
 

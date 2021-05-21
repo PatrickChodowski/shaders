@@ -1,6 +1,6 @@
-{'x': 0, 'y': 0, 'w': 64, 'h': 64, 'type': 10, 'solid': 0, 'x_end': 63}
-{'x': 64, 'y': 0, 'w': 64, 'h': 64, 'type': 20, 'solid': 0, 'x_end': 127}
-{'x': 128, 'y': 0, 'w': 64, 'h': 64, 'type': 12, 'solid': 1, 'x_end': 196}
+{'x': 0, 'y': 0, 'w': 64, 'h': 64, 'type': 10, 'solid': 0, 'x_end': 63, 'texture_id': 0}
+{'x': 64, 'y': 0, 'w': 64, 'h': 64, 'type': 20, 'solid': 0, 'x_end': 127, 'texture_id': 0}
+{'x': 128, 'y': 0, 'w': 64, 'h': 64, 'type': 12, 'solid': 1, 'x_end': 196, 'texture_id': 0}
 
 
 
