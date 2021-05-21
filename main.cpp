@@ -45,11 +45,12 @@ int main()
     light_coords[1]  = (float)CAMERA_Y;
   }
 
-
+  // 
   unsigned int texture0 = textures::load(0, "./assets/dungeon_spritesheet.png", 256, 64, 4);
   unsigned int texture1 = textures::load(1, "./assets/redripper_spritesheet.png", 64, 64, 4);
   textures::bind(texture0, 0);
   textures::bind(texture1, 1);
+  int samplers[2] = {0,1};
 
   while(RUNNING)
   {
@@ -63,9 +64,10 @@ int main()
       light_coords[1] += MOVE_CAMERA_Y;
     }
 
+    // dynamic buffer
+    buffer::update(QUADS);
     glClear(GL_COLOR_BUFFER_BIT);
     glUniform2f(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "LightCoord"), light_coords[0], light_coords[1]);
-    int samplers[2] = {0,1};
     glUniform1iv(glGetUniformLocation(shaders::shader_map[CURRENT_SHADER], "textures"), 2, samplers);
 
     glm::mat4 MVP = generate_mvp(ZOOM, -CAMERA_X, CAMERA_Y);
