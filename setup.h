@@ -15,8 +15,6 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
 
 #include <stdio.h> 
 #include <stdlib.h> 
@@ -84,10 +82,6 @@ bool RUNNING = true;
 #include "ogl/buffer.h"
 
 int CAMERA_SPEED = 20;
-
-
-// int CAMERA_X = (WINDOW_WIDTH/2);
-// int CAMERA_Y = (WINDOW_HEIGHT/2);
 int CAMERA_X = 0;
 int CAMERA_Y = 0;
 int MOVE_CAMERA_X = 0;
