@@ -81,6 +81,8 @@ int VERTEX_OFFSET = 1;
     //   b
     // c d
 
+    std::string sheet_name;
+
   };
 
 
@@ -89,10 +91,92 @@ int VERTEX_OFFSET = 1;
 // and then assign vertices to each tile, and construct indices 
 // then we will store information in vector of Tile structs =  level_map
 
+std::vector<Tile> assign_vertices(std::vector<Tile> quads)
+{
+  for(int i = 0; i < quads.size(); i++)
+  { 
+    // add vertex ids
+    int j = i * 4;
+    quads[i].a = j;
+    quads[i].b = j+1;
+    quads[i].c = j+2;
+    quads[i].d = j+3;
+
+    // create vertex struct - A
+    quads[i].v_a.vertex_id = quads[i].a;
+    quads[i].v_a.tile_id = quads[i].id;
+    quads[i].v_a.tile_type = quads[i].type;
+    quads[i].v_a.x_pos = (float)quads[i].x;
+    quads[i].v_a.y_pos = (float)quads[i].y;
+    quads[i].v_a.z_pos = 0.0f;
+    quads[i].v_a.r_col = 0.0f;
+    quads[i].v_a.g_col = 0.0f;
+    quads[i].v_a.b_col = 0.0f;
+    quads[i].v_a.a_col = 1.0f;
+    quads[i].v_a.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_start;
+    quads[i].v_a.tex_coord_y = 0.0f;
+
+    // create vertex struct - B
+    quads[i].v_b.vertex_id = quads[i].b;
+    quads[i].v_b.tile_id = quads[i].id;
+    quads[i].v_b.tile_type = quads[i].type;
+    quads[i].v_b.x_pos = (float)quads[i].x + (float)TILE_DIM  - (float)VERTEX_OFFSET;
+    quads[i].v_b.y_pos = (float)quads[i].y;
+    quads[i].v_b.z_pos = 0.0f;
+    quads[i].v_b.r_col = 0.0f;
+    quads[i].v_b.g_col = 0.0f;
+    quads[i].v_b.b_col = 0.0f;
+    quads[i].v_b.a_col = 1.0f;
+    quads[i].v_b.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_end;
+    quads[i].v_b.tex_coord_y = 0.0f;
+
+    // create vertex struct - C
+    quads[i].v_c.vertex_id = quads[i].c;
+    quads[i].v_c.tile_id = quads[i].id;
+    quads[i].v_c.tile_type = quads[i].type;
+    quads[i].v_c.x_pos = (float)quads[i].x;
+    quads[i].v_c.y_pos = (float)quads[i].y + (float)TILE_DIM - (float)VERTEX_OFFSET;
+    quads[i].v_c.z_pos = 0.0f;
+    quads[i].v_c.r_col = 0.0f;
+    quads[i].v_c.g_col = 0.0f;
+    quads[i].v_c.b_col = 0.0f;
+    quads[i].v_c.a_col = 1.0f;
+    quads[i].v_c.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_start;
+    quads[i].v_c.tex_coord_y = 1.0f;
+
+    // create vertex struct - D
+    quads[i].v_d.vertex_id = quads[i].d;
+    quads[i].v_d.tile_id = quads[i].id;
+    quads[i].v_d.tile_type = quads[i].type;
+    quads[i].v_d.x_pos = (float)quads[i].x + (float)TILE_DIM  - (float)VERTEX_OFFSET;
+    quads[i].v_d.y_pos = (float)quads[i].y + (float)TILE_DIM - (float)VERTEX_OFFSET;
+    quads[i].v_d.z_pos = 0.0f;
+    quads[i].v_d.r_col = 0.0f;
+    quads[i].v_d.g_col = 0.0f;
+    quads[i].v_d.b_col = 0.0f;
+    quads[i].v_d.a_col = 1.0f;
+    quads[i].v_d.tex_coord_x = textures::tile_frames_catalog[quads[i].sheet_name][quads[i].type].norm_x_end;
+    quads[i].v_d.tex_coord_y = 1.0f;
+
+    // create vindices 
+    quads[i].i_left.a = quads[i].a;
+    quads[i].i_left.b = quads[i].b;
+    quads[i].i_left.c = quads[i].c;
+
+    quads[i].i_right.a = quads[i].b;
+    quads[i].i_right.b = quads[i].c;
+    quads[i].i_right.c = quads[i].d;
+
+    
+
+  }
+  return quads;
+}
+
+
 
 std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map_vertex_height, int tile_dim)
 {
-
   std::vector<Tile> level_tile_map = {};
   std::string file_path = "maps/" + lvl_name;
   std::ifstream in_file;
@@ -114,6 +198,7 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
           tile.y = r * tile_dim;
           in_file >> tile.type;
           tile.id = TILE_COUNTER;
+          tile.sheet_name = "dungeon";
           level_tile_map.push_back(tile);
           TILE_COUNTER += 1;
         };
@@ -125,84 +210,8 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
   int vertex_width_size = map_vertex_width*2; 
   int vertex_height_size = map_vertex_height*2; 
 
-  for(int i = 0; i < level_tile_map.size(); i++)
-  {
-    // add vertex ids
-    int j = i * 4;
-    level_tile_map[i].a = j;
-    level_tile_map[i].b = j+1;
-    level_tile_map[i].c = j+2;
-    level_tile_map[i].d = j+3;
-
-    // create vertex struct - A
-    level_tile_map[i].v_a.vertex_id = level_tile_map[i].a;
-    level_tile_map[i].v_a.tile_id = level_tile_map[i].id;
-    level_tile_map[i].v_a.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_a.x_pos = (float)level_tile_map[i].x;
-    level_tile_map[i].v_a.y_pos = (float)level_tile_map[i].y;
-    level_tile_map[i].v_a.z_pos = 0.0f;
-    level_tile_map[i].v_a.r_col = 0.0f;
-    level_tile_map[i].v_a.g_col = 0.0f;
-    level_tile_map[i].v_a.b_col = 0.0f;
-    level_tile_map[i].v_a.a_col = 1.0f;
-    level_tile_map[i].v_a.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
-    level_tile_map[i].v_a.tex_coord_y = 0.0f;
-
-    // create vertex struct - B
-    level_tile_map[i].v_b.vertex_id = level_tile_map[i].b;
-    level_tile_map[i].v_b.tile_id = level_tile_map[i].id;
-    level_tile_map[i].v_b.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_b.x_pos = (float)level_tile_map[i].x + (float)tile_dim  - (float)VERTEX_OFFSET;
-    level_tile_map[i].v_b.y_pos = (float)level_tile_map[i].y;
-    level_tile_map[i].v_b.z_pos = 0.0f;
-    level_tile_map[i].v_b.r_col = 0.0f;
-    level_tile_map[i].v_b.g_col = 0.0f;
-    level_tile_map[i].v_b.b_col = 0.0f;
-    level_tile_map[i].v_b.a_col = 1.0f;
-    level_tile_map[i].v_b.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
-    level_tile_map[i].v_b.tex_coord_y = 0.0f;
-
-    // create vertex struct - C
-    level_tile_map[i].v_c.vertex_id = level_tile_map[i].c;
-    level_tile_map[i].v_c.tile_id = level_tile_map[i].id;
-    level_tile_map[i].v_c.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_c.x_pos = (float)level_tile_map[i].x;
-    level_tile_map[i].v_c.y_pos = (float)level_tile_map[i].y + (float)tile_dim - (float)VERTEX_OFFSET;
-    level_tile_map[i].v_c.z_pos = 0.0f;
-    level_tile_map[i].v_c.r_col = 0.0f;
-    level_tile_map[i].v_c.g_col = 0.0f;
-    level_tile_map[i].v_c.b_col = 0.0f;
-    level_tile_map[i].v_c.a_col = 1.0f;
-    level_tile_map[i].v_c.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_start;
-    level_tile_map[i].v_c.tex_coord_y = 1.0f;
-
-    // create vertex struct - D
-    level_tile_map[i].v_d.vertex_id = level_tile_map[i].d;
-    level_tile_map[i].v_d.tile_id = level_tile_map[i].id;
-    level_tile_map[i].v_d.tile_type = level_tile_map[i].type;
-    level_tile_map[i].v_d.x_pos = (float)level_tile_map[i].x + (float)tile_dim  - (float)VERTEX_OFFSET;
-    level_tile_map[i].v_d.y_pos = (float)level_tile_map[i].y + (float)tile_dim - (float)VERTEX_OFFSET;
-    level_tile_map[i].v_d.z_pos = 0.0f;
-    level_tile_map[i].v_d.r_col = 0.0f;
-    level_tile_map[i].v_d.g_col = 0.0f;
-    level_tile_map[i].v_d.b_col = 0.0f;
-    level_tile_map[i].v_d.a_col = 1.0f;
-    level_tile_map[i].v_d.tex_coord_x = textures::tile_frames_catalog["dungeon"][level_tile_map[i].type].norm_x_end;
-    level_tile_map[i].v_d.tex_coord_y = 1.0f;
-
-    // create vindices 
-    level_tile_map[i].i_left.a = level_tile_map[i].a;
-    level_tile_map[i].i_left.b = level_tile_map[i].b;
-    level_tile_map[i].i_left.c = level_tile_map[i].c;
-
-    level_tile_map[i].i_right.a = level_tile_map[i].b;
-    level_tile_map[i].i_right.b = level_tile_map[i].c;
-    level_tile_map[i].i_right.c = level_tile_map[i].d;
-
-  }
-
-
-
+  std::vector<Tile> quads = assign_vertices(level_tile_map);
+  
   // for(int t=0; t<level_tile_map.size(); t++)
   // for(int t=0; t<2; t++)
   // {
@@ -220,17 +229,23 @@ std::vector<Tile> load_level(std::string lvl_name, int map_vertex_width, int map
   //   level_tile_map[t].i_right.a << " " << level_tile_map[t].i_right.b << " " << level_tile_map[t].i_right.c << std::endl;
   // }
 
-
-  
-  return level_tile_map;
-
-
+  return quads;
 }
 
+  // // to the same for other objects?
+  std::vector<Tile> load_objects()
+  {
+    std::vector<Tile> objects = {};
+    struct Tile quad;
+    quad.x=400;
+    quad.y=300;
+    quad.id=0;
+    quad.sheet_name = "redripper";
+    objects.push_back(quad);
 
 
-
-
+    return objects;
+  }
 
 }
 

@@ -80,6 +80,8 @@ int main()
 
 
   shaders::check_glew(err);
+
+  // add objects map?
   buffer::init(level_map);
   
 
