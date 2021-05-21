@@ -124,12 +124,6 @@ namespace textures
   };
 
 
-  // void bind_all()
-  // {
-
-  // }
-
-
 
   std::map<int, struct TileFrame> read_tiles_spritesheet(const char *img_json_path)
   {
